@@ -13,7 +13,7 @@ int main()
     for (int i = 0; i < N; ++i)
         cin >> a[i];
 
-    for (; ok; ++cnt)
+    for (; ok;)
 
     {
         for (int i = 0; i < N; ++i)
@@ -28,6 +28,10 @@ int main()
 
                 break;
             }
+        }
+        if (ok)
+        {
+            ++cnt;
         }
     }
 
