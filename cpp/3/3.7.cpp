@@ -7,14 +7,14 @@ using namespace std;
 
 int main()
 {
-    long N;
+    long long N;
     cin >> N;
     vector<int> a;
     int len = 0;
-    long rest = N;
+    long long rest = N;
     for (;;)
     {
-        long n = rest % 10;
+        long long n = rest % 10;
         rest = rest / 10;
         ++len;
         a.push_back(n);
@@ -25,10 +25,10 @@ int main()
     }
     reverse(a.begin(), a.end());
 
-    long sum = 0;
+    long long sum = 0;
     for (int bit = 0; bit < (1 << (len - 1)); ++bit)
     {
-        long t = 0;
+        long long t = 0;
         for (int i = 0; i < len; ++i)
         {
             int shift = len - i - 1;
