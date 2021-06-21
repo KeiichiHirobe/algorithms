@@ -3,7 +3,7 @@
 using namespace std;
 
 template <class T>
-void chmax(T &a, T b)
+void chmax(T &a, T &b)
 {
     if (a.length() < b.length())
     {
@@ -22,11 +22,11 @@ int main()
         {
             if (S[i] == T[j])
             {
-                chmax(dp[i + 1][j + 1], dp[i][j] + S[i]);
+                string concated = dp[i][j] + S[i];
+                chmax(dp[i + 1][j + 1], concated);
             }
             else
             {
-                chmax(dp[i + 1][j + 1], dp[i][j]);
                 chmax(dp[i + 1][j + 1], dp[i][j + 1]);
                 chmax(dp[i + 1][j + 1], dp[i + 1][j]);
             }
