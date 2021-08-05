@@ -20,17 +20,21 @@ struct UnionFind
         return root(x) == root(y);
     }
 
-    bool unite(int x, int y)
+    // bool: 新たに連結されたか
+    // pair: bool=trueのときのみ意味があり、mergeされる前のそろぞれの要素数
+    pair<bool, pair<int, int> > unite(int x, int y)
     {
         x = root(x);
         y = root(y);
         if (x == y)
-            return false;
+            return make_pair(false, make_pair(0, 0));
         if (siz[x] < siz[y])
             swap(x, y);
+        int size_x = siz[x];
+        int size_y = siz[y];
         par[y] = x;
-        siz[x] += siz[y];
-        return true;
+        siz[x] += size_y;
+        return make_pair(true, make_pair(size_x, size_y));
     }
 
     int size(int x)
@@ -54,33 +58,25 @@ int main()
         e[i] = pair<int, int>(x - 1, y - 1);
     }
 
-    vector<long long> ret;
+    vector<long long> ret(M);
     UnionFind uf(N);
-    int cnt = 0;
+    long long cnt = static_cast<long long>(N) * static_cast<long long>(N - 1) / 2;
+    ret[M - 1] = cnt;
     for (int j = M - 1; j >= 1; --j)
     {
-        vector<int> v;
-        uf.unite(e[j].first, e[j].second);
-        long long total = 0;
-        for (int x = 0; x < N; ++x)
+        pair<bool, pair<int, int> > united = uf.unite(e[j].first, e[j].second);
+        if (united.first == false)
         {
-            if (uf.root(x) == x)
-            {
-                v.push_back(uf.size(x));
-            }
+            ret[j - 1] = cnt;
         }
-        for (int i = 0; i < v.size(); ++i)
+        else
         {
-            for (int j = i + 1; j < v.size(); ++j)
-            {
-                total += v[i] * v[j];
-            }
+            cnt -= static_cast<long long>(united.second.first) * static_cast<long long>(united.second.second);
+            ret[j - 1] = cnt;
         }
-        ret.push_back(total);
     }
-    for (int j = M - 2; j >= 0; --j)
+    for (int i = 0; i < M; i++)
     {
-        cout << ret[j] << endl;
+        cout << ret[i] << endl;
     }
-    cout << N * (N - 1) / 2 << endl;
 }
