@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 using namespace std;
 
 struct UnionFind
@@ -69,24 +70,14 @@ int main()
         ufl.unite(x, y);
     }
 
-    vector<int> ret(N, 0);
+    map<pair<int, int>, int> cnt;
     for (int i = 0; i < N; ++i)
     {
-        for (int j = i; j < N; ++j)
-        {
-            if (i != j)
-            {
-                if (ufk.issame(i, j) && ufl.issame(i, j))
-                {
-                    ret[i] += 1;
-                    ret[j] += 1;
-                }
-            }
-        }
+        cnt[make_pair(ufk.root(i), ufl.root(i))] += 1;
     }
 
     for (int i = 0; i < N; i++)
     {
-        cout << ret[i] + 1 << endl;
+        cout << cnt[make_pair(ufk.root(i), ufl.root(i))] << endl;
     }
 }
