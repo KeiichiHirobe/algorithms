@@ -19,9 +19,10 @@ long long extGCD(long long a, long long b, long long &x, long long &y)
     return d;
 }
 
-vector<pair<long long, long long> > prime_factorize(long long N)
+// 素因数分解
+vector<pair<long long, long long>> prime_factorize(long long N)
 {
-    vector<pair<long long, long long> > res;
+    vector<pair<long long, long long>> res;
     for (long long a = 2; a * a <= N; ++a)
     {
         if (N % a != 0)
@@ -61,8 +62,8 @@ TEST(extendEuclid, wikipedia)
 TEST(primefactor, 2020)
 {
     const auto &ret = prime_factorize(2020);
-    vector<pair<long long, long long> > expected{{2, 2},
-                                                 {5, 1},
-                                                 {101, 1}};
+    vector<pair<long long, long long>> expected{{2, 2},
+                                                {5, 1},
+                                                {101, 1}};
     EXPECT_EQ(ret, expected);
 }
