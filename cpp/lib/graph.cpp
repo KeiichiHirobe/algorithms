@@ -36,6 +36,8 @@ vector<int> BFS(const Graph &G, int s)
 }
 
 // 深さ優先探索
+// CAUTION:
+// seen.assign(N, false);
 vector<bool> seen;
 void dfs(const Graph &G, int v)
 {
