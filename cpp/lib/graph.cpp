@@ -10,8 +10,7 @@ using Graph = vector<vector<int>>;
 vector<int> BFS(const Graph &G, int s)
 {
     int N = (int)G.size(); // 頂点数
-    // 通常時は以下のようにする
-    // vector<bool> seen(N, falswe);
+    // vector<bool> seen(N, false);
     vector<int> dist(N, -1); // 全頂点を「未訪問」に初期化
     queue<int> que;
 
