@@ -5,6 +5,8 @@
             "label": "C/C++: clang++ アクティブなファイルのビルド",
             "command": "/usr/bin/clang++",
             "args": [
+                "--std",
+                "c++17",
                 "-g",
                 "${file}",
                 "-o",
