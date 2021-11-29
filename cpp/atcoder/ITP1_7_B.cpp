@@ -6,7 +6,21 @@ using namespace std;
 
 int count(int n, int x)
 {
-    return 1;
+    int cnt = 0;
+    // int max = (x + 2) / 3;
+    int max = n;
+    for (int i = 1; i <= max; i++)
+    {
+        for (int j = i + 1; j <= n; j++)
+        {
+            int r = x - i -j;
+            if (r > j && r <= n)
+            {
+                ++cnt;
+            }
+        }
+    }
+    return cnt;
 }
 int main()
 {
