@@ -2,7 +2,6 @@
 #include <vector>
 #include <cmath>
 #include <map>
-#include <algorithm>
 // clang-format off
 #define rep(i,n) for(int i=0, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
@@ -19,32 +18,52 @@ using namespace std;
 
 int main()
 {
-    int n;
-    int m;
-    cin >> n;
-    cin >> m;
+    int a;
+    int b;
+    int c;
+    int x;
+    int y;
+    cin >> a;
+    cin >> b;
+    cin >> c;
+    cin >> x;
+    cin >> y;
 
-    vector<vector<long long>> v(n, vector<long long>(m, 0));
-    rep(i, n)
+    int both = 0;
+    int rest = 0;
+    int price = 0;
+
+    if (x < y)
     {
-        rep(j, m)
-        {
-            cin >> v[i][j];
-        }
+        both = x;
+        rest = y - x;
+        price = b;
+    }
+    else
+    {
+        both = y;
+        rest = x - y;
+        price = a;
     }
 
-    ll max = 0;
-    rep(i, m)
+    int total = 0;
+    if (a + b < 2 * c)
     {
-        for (int j = i + 1; j < m; j++)
-        {
-            long long sum = 0;
-            rep(k, n)
-            {
-                sum += std::max(v[k][i], v[k][j]);
-            }
-            chmax(max, sum);
-        }
+        total += (a + b) * both;
     }
-    cout << max << endl;
+    else
+    {
+        total += c * both * 2;
+    }
+
+    if (price < 2 * c)
+    {
+        total += price * rest;
+    }
+    else
+    {
+        total += 2 * c * rest;
+    }
+
+    cout << total << endl;
 }
