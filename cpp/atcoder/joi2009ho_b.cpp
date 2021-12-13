@@ -1,9 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <map>
 #include <algorithm>
-#include <queue>
+#include <map>
 // clang-format off
 #define rep(i,n) for(int i=0, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
@@ -20,32 +19,34 @@ using namespace std;
 
 int main()
 {
+    int d;
     int n;
     int m;
+    cin >> d;
     cin >> n;
     cin >> m;
-
-    vector<vector<long long>> v(n, vector<long long>(m, 0));
-    rep(i, n)
+    vector<int> v(n + 1, 0);
+    v[0] = 0;
+    v[n] = d;
+    rep(i, n - 1)
     {
-        rep(j, m)
-        {
-            cin >> v[i][j];
-        }
+        cin >> v[i + 1];
     }
 
-    ll max = 0;
+    sort(ALL(v));
+
+    int target = 0;
+    int total = 0;
     rep(i, m)
     {
-        for (int j = i + 1; j < m; j++)
-        {
-            long long sum = 0;
-            rep(k, n)
-            {
-                sum += std::max(v[k][i], v[k][j]);
-            }
-            chmax(max, sum);
-        }
+        cin >> target;
+        auto l = lower_bound(ALL(v), target);
+        auto lbefore = l - 1;
+
+        int ldiff = abs(*l - target);
+        int lbeforediff = abs(*lbefore - target);
+
+        total += min(ldiff, lbeforediff);
     }
-    cout << max << endl;
+    cout << total << endl;
 }
