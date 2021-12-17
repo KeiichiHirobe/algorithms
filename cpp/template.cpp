@@ -10,6 +10,8 @@ template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } retu
 template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
 #define SZ(x) ((int)(x).size())
 using ll = long long;
+// 2^60
+const ll INF = 1LL << 60;
 // lower_bound(ALL(a), 4)
 #define ALL(a)  (a).begin(),(a).end()
 int gcd(int a,int b){return b?gcd(b,a%b):a;}
