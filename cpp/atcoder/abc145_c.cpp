@@ -3,8 +3,8 @@
 #include <cmath>
 #include <map>
 #include <algorithm>
-#include <queue>
 #include <iomanip>
+#include <queue>
 // clang-format off
 #define rep(i,n) for(int i=0, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
@@ -23,33 +23,44 @@ using namespace std;
 
 int main()
 {
-    cout << fixed << setprecision(16);
     int n;
-    int m;
     cin >> n;
-    cin >> m;
 
-    vector<vector<long long>> v(n, vector<long long>(m, 0));
+    vector<int> v(n, 0);
+
+    vector<pair<int, int>> pv(n);
+
     rep(i, n)
     {
-        rep(j, m)
-        {
-            cin >> v[i][j];
-        }
+        int x;
+        int y;
+        cin >> x;
+        cin >> y;
+        pv[i] = {x, y};
     }
 
-    ll max = 0;
-    rep(i, m)
+    rep(i, n)
     {
-        for (int j = i + 1; j < m; j++)
-        {
-            long long sum = 0;
-            rep(k, n)
-            {
-                sum += std::max(v[k][i], v[k][j]);
-            }
-            chmax(max, sum);
-        }
+        v[i] = i;
     }
-    cout << max << endl;
+
+    double total = 0;
+    int cnt = 0;
+
+    cout << fixed << setprecision(10);
+
+    do
+    {
+        for (auto t = v.begin(); t + 1 < v.end(); ++t)
+        {
+            auto a = pv[*t];
+            auto b = pv[*(t + 1)];
+            int dx = a.first - b.first;
+            int dy = a.second - b.second;
+            total += sqrt(double(dx * dx + dy * dy));
+        }
+        ++cnt;
+    } while (next_permutation(v.begin(), v.end()));
+
+    cout << total / (double(cnt)) << endl;
 }
