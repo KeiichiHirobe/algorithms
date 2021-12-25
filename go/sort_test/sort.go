@@ -43,6 +43,15 @@ func insertionSort(data Interface, a, b int) {
 	}
 }
 
+// insertionSortH sorts data[a:b] using insertion sort with gap = h.
+func insertionSortH(data Interface, a, b, h int) {
+	for i := a + h; i < b; i++ {
+		for j := i; j-h > a && data.Less(j, j-h); j -= h {
+			data.Swap(j, j-h)
+		}
+	}
+}
+
 // siftDown implements the heap property on data[lo:hi].
 // first is an offset into the array where the root of the heap lies.
 func siftDown(data Interface, lo, hi, first int) {
@@ -194,7 +203,7 @@ func doPivot(data Interface, lo, hi int) (midlo, midhi int) {
 }
 
 func quickSort(data Interface, a, b, maxDepth int) {
-	for b-a > 12 { // Use ShellSort for slices <= 12 elements
+	for b-a > 192 { // Use ShellSort for slices <= 12 elements
 		if maxDepth == 0 {
 			heapSort(data, a, b)
 			return
@@ -214,11 +223,15 @@ func quickSort(data Interface, a, b, maxDepth int) {
 	if b-a > 1 {
 		// Do ShellSort pass with gap 6
 		// It could be written in this simplified form cause b-a <= 12
-		for i := a + 6; i < b; i++ {
-			if data.Less(i, i-6) {
-				data.Swap(i, i-6)
+		/*
+			for i := a + 6; i < b; i++ {
+				if data.Less(i, i-6) {
+					data.Swap(i, i-6)
+				}
 			}
-		}
+		*/
+		insertionSortH(data, a, b, 9)
+		insertionSortH(data, a, b, 6)
 		insertionSort(data, a, b)
 	}
 }
