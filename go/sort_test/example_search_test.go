@@ -6,7 +6,7 @@ package sort_test
 
 import (
 	"fmt"
-	"sort"
+	"github.com/algorithms/go/sort_test"
 )
 
 // This example demonstrates searching a list sorted in ascending order.

@@ -6,7 +6,7 @@ package sort_test
 
 import (
 	"fmt"
-	"sort"
+	"github.com/algorithms/go/sort_test"
 )
 
 // A couple of type definitions to make the units clear.

@@ -7,7 +7,15 @@
 
 package sort
 
+/*
 import "internal/reflectlite"
 
 var reflectValueOf = reflectlite.ValueOf
 var reflectSwapper = reflectlite.Swapper
+ */
+
+import "reflect"
+
+var reflectValueOf = reflect.ValueOf
+var reflectSwapper = reflect.Swapper
+

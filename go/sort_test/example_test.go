@@ -7,7 +7,7 @@ package sort_test
 import (
 	"fmt"
 	"math"
-	"sort"
+	"github.com/algorithms/go/sort_test"
 )
 
 func ExampleInts() {

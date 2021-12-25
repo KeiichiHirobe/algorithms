@@ -6,7 +6,7 @@ package sort_test
 
 import (
 	"fmt"
-	"sort"
+	"github.com/algorithms/go/sort_test"
 )
 
 // A Change is a record of source code changes, recording user, language, and delta size.
