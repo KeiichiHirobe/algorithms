@@ -43,6 +43,8 @@ vector<pair<long long, long long>> prime_factorize(long long N)
     return res;
 }
 
+// https://qiita.com/drken/items/3b4fdf0a78e7a138cd9a
+
 // a^n mod を計算する
 // 二分累乗法 O(log n)
 // 3^45 = 3^{2^0} * 3^{2^2} * 3^{2^3} * 3^{2^5}
