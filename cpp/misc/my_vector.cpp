@@ -19,7 +19,9 @@ public:
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    vector(const allocator_type &alloc) noexcept : alloc(alloc) {}
+    vector(const allocator_type &alloc) noexcept : alloc(alloc)
+    {
+    }
     vector() : vector(allocator_type()) {}
     vector(size_type size, const allocator_type &alloc = allocator_type()) : vector(alloc)
     {
@@ -45,11 +47,84 @@ public:
 
     ~vector()
     {
+        // 要素を末尾から先頭に向かう順番で破棄
         clear();
+        // 生のメモリを解放
         deallocate();
     }
-    vector(const vector &x);
-    vector &operator=(const vector &x);
+
+    //   copy constructor
+    vector(const vector &r) : alloc(traits::select_on_container_copy_construction(r.alloc))
+    {
+        reserve(r.size());
+        for (auto dest = first, src = r.begin(), last = r.end();
+             src != last;
+             ++dest, ++src)
+        {
+            construct(dest, *src);
+        }
+        last = first + r.size();
+    }
+
+    // move constructor
+    vector(vector &&r) : alloc(r.alloc), first(r.first), last(r.last), reserved_last(r.reserved_last)
+    {
+        r.first = nullptr;
+        r.last = nullptr;
+        r.reserved_last = nullptr;
+    }
+
+    // copyは自分自身へのcopyをcheckする
+    vector &operator=(const vector &r)
+    {
+        if (this == &r)
+        {
+            return *this;
+        }
+        if (size() == r.size())
+        {
+            copy(r.begin(), r.end(), begin());
+        }
+        else if (capacity() >= r.size() && r.size() >= size())
+        {
+            copy(r.begin(), r.begin() + size(), begin());
+            for (auto src_iter = r.begin() + size(), src_end = r.end(); src_iter != src_end; ++src_iter, ++last)
+            {
+                construct(last, *src_iter);
+            }
+        }
+        else if (capacity() >= r.size() && r.size() < size())
+        {
+            copy(r.begin(), r.end(), begin());
+            resize(r.size());
+        }
+        else
+        {
+            clear();
+            reserve(r.size());
+
+            for (auto src_iter = r.begin(), src_end = r.end(), dest_iter = begin();
+                 src_iter != src_end; ++src_iter, ++dest_iter, ++last)
+            {
+                construct(dest_iter, *src_iter);
+            }
+        }
+        return *this;
+    }
+
+    // moveは自分自身へのmoveはcheckしないのが通例
+    vector &operator=(vector &&r)
+    {
+        clear();
+        deallocate();
+        alloc = r.alloc;
+        first = r.first;
+        last = r.last;
+        reserved_last = r.reserved_last;
+        r.first = nullptr;
+        r.last = nullptr;
+        r.reserved_last = nullptr;
+    }
 
     void resize(size_type sz)
     {
@@ -106,7 +181,9 @@ public:
         last = ptr + current_size;
         reserved_last = last;
     }
-
+    // v.push_back(std::string("b"));
+    // push_backの場合は値コピーまたはムーブ処理が発生する
+    // 一時オブジェクトstd::string("b")のデストラクタも呼ばれる
     void push_back(const_reference value)
     {
         if (size() + 1 > capacity())
@@ -199,19 +276,19 @@ public:
     }
     reference front()
     {
-        return first;
+        return *first;
     }
     reference front() const
     {
-        return first;
+        return *first;
     }
     reference back()
     {
-        return last - 1;
+        return *(last - 1);
     }
     reference back() const
     {
-        return last - 1;
+        return *(last - 1);
     }
     void clear() noexcept
     {
@@ -219,9 +296,9 @@ public:
     }
 
 private:
-    pointer first;
-    pointer last;
-    pointer reserved_last;
+    pointer first = nullptr;
+    pointer last = nullptr;
+    pointer reserved_last = nullptr;
     allocator_type alloc;
     using traits = std::allocator_traits<allocator_type>;
 
@@ -263,7 +340,6 @@ private:
         {
             return;
         }
-        std::cout << sz << std::endl;
         auto ptr = allocate(sz);
 
         auto old_first = first;
@@ -291,23 +367,27 @@ private:
 int main()
 {
     vector<int> v(10);
+    std::cout << "=============" << std::endl;
+    /*
     for (auto i = 0; i != 10; ++i)
     {
         v[i] = i;
     }
-    v.resize(13);
+    */
+    // v.resize(13);
+    std::cout << v.front() << std::endl;
 
+    /*
     std::for_each(v.begin(), v.end(),
                   [](auto x)
                   { std::cout << x; });
 
     vector<int> w = {1, 2, 3, 4, 5};
 
-    /*
     std::array<int, 5> a{1, 2, 3, 4, 5};
 
     std::for_each(w.begin(), w.end(),
                   [](auto x)
                   { std::cout << x; });
-                  */
+    */
 }
