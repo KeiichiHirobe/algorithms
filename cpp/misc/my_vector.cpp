@@ -45,6 +45,9 @@ public:
         vector(std::begin(init), std::end(init), alloc);
     }
 
+    // destructorはデフォルトだと空
+    // classのdestructor -> memberのfieldの定義逆順にdestructor の順で呼ばれる
+    // newで確保したオブジェクトは自前でdestructorやメモリ解放が必要
     ~vector()
     {
         // 要素を末尾から先頭に向かう順番で破棄
