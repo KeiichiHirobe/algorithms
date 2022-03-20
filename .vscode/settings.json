@@ -9,5 +9,7 @@
     "editor.formatOnSave": true,
     "files.exclude": {
         "**/*.dSYM": true
-    }
+    },
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.enablePreviewFromQuickOpen": false
 }
