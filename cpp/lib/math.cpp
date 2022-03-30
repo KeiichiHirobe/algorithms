@@ -63,12 +63,13 @@ long long modpow(long long a, long long n, long long mod)
     return ret;
 }
 
-// a^{-1} mod
-// 基本はmodinvを使うこと！！
+// a^{-1} mod p (pは素数、aはpの倍数でなければいい)
+// 基本はmodinvを使うこと！！ aがpの倍数の時は逆元は存在しない
 // Fermat の小定理
 // pを素数、aをpの倍数でない整数として
 // a^{p−1} ≡ 1 (mod p)
 // a * a^{p−2} ≡ 1 (mod p)
+// -> aの逆元は mod p において一意に存在し、それは a^{p-2} である。
 long long modinv_fermat(long long a, long long mod)
 {
     return modpow(a, mod - 2, mod);
@@ -83,8 +84,9 @@ long long normalize_mod(long long val, long long m)
     return res;
 }
 
-// a^{-1} mod
+// a^{-1} mod p (aとpが互いに素であればいい)
 // Euclidの互除法
+// a*x-1 がpの倍数であることを意味するので
 // a,pが互いに素として
 // ax + py = 1　を満たす整数yが存在するときのxが逆元
 long long modinv(long long a, long long mod)
@@ -93,6 +95,73 @@ long long modinv(long long a, long long mod)
     long long y;
     extGCD(a, mod, x, y);
     return normalize_mod(x, mod);
+}
+
+// modinvはlog(N)である。
+// 1,2,..N それぞれの逆元を知りたい場合は普通にやると N*log(N)になってしまうが、以下で O(N)になる
+// aの逆元がp%aの逆元で表現できることを利用している
+// https://drken1215.hatenablog.com/entry/2018/06/08/210000
+
+const int MAX = 510000;
+const int MOD = 1000000007;
+
+long long fac[MAX], finv[MAX], inv[MAX];
+
+// テーブルを作る前処理
+void COMinit()
+{
+    fac[0] = fac[1] = 1;
+    finv[0] = finv[1] = 1;
+    inv[1] = 1;
+    for (int i = 2; i < MAX; i++)
+    {
+        fac[i] = fac[i - 1] * i % MOD;
+        inv[i] = MOD - inv[MOD % i] * (MOD / i) % MOD;
+        finv[i] = finv[i - 1] * inv[i] % MOD;
+    }
+}
+
+// 二項係数計算
+long long COM(int n, int k)
+{
+    if (n < k)
+        return 0;
+    if (n < 0 || k < 0)
+        return 0;
+    return fac[n] * (finv[k] * finv[n - k] % MOD) % MOD;
+}
+
+// 中国の剰余定理
+// https://qiita.com/drken/items/ae02240cd1f8edfc86fd
+// b={2,3}
+// m={3,5}
+// ret={8,15}
+// -> 「3で割って2余り、5で割って3余る数」は「15で割って8余る数」と同値
+// リターン値を (r, m) とすると解は x ≡ r (mod. m)
+// 解なしの場合は (0, -1) をリターン
+pair<long long, long long> ChineseRem(const vector<long long> &b, const vector<long long> &m)
+{
+    long long r = 0, M = 1;
+    for (int i = 0; i < (int)b.size(); ++i)
+    {
+        long long p, q;
+        // m1とm2の最大公約数をdとして、m1 * p + m2 * q = d
+        // 両辺dで割ることによって、p は　m1/d の逆元(mod m2/d) であることがわかる
+        long long d = extGCD(M, m[i], p, q); // p is inv of M/d (mod. m[i]/d)
+        // dをmodとしてb1とb2は同値であることが必要十分条件
+        // 特にm1とm2が互いに素であればd=1となり、上記条件は必ず成り立つ
+        if ((b[i] - r) % d != 0)
+            return make_pair(0, -1);
+
+        // (m[i]/d) のmodをMをかける前に適用できる
+        // 一般に m1 * a と m1 * (a mod  m2) はm1*m2を法として同値になるためと思われる
+        long long tmp = (b[i] - r) / d * p % (m[i] / d);
+        r += M * tmp;
+        // Mはm1とm2の最小公倍数
+        // 特にm1とm2が互いに素であればm1*m2
+        M *= m[i] / d;
+    }
+    return make_pair(normalize_mod(r, M), M);
 }
 
 // /usr/bin/clang++ --std c++17 /Users/keiichi/go/src/github.com/algorithms/cpp/lib/math.cpp -o ./out  -L/usr/local/lib -lgtest -lgtest_main
