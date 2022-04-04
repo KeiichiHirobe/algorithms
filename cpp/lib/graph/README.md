@@ -10,7 +10,7 @@
   * 辺の重みが非負の場
   * 閉路あり可
   * ナイーブ実装 O(V^2) priority queueの実装は O(E*logV)
-  * 疎なグラフは前者の方がむしろ早い
+  * 密なグラフは前者の方がむしろ早い
   * dijkstra.cpp/dijkstra_pqueue.cpp
 * トポロジーソート後にDP
   * DAG

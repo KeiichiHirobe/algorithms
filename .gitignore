@@ -32,3 +32,8 @@
 *.app
 
 *.dSYM
+
+atcoder
+*.xml
+
+rust
