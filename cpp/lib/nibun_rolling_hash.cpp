@@ -101,6 +101,7 @@ int main()
 int my_lower_bound(const vector<int> &v, const int &value)
 {
     int a = 0;
+    // countはvalueより小さい可能性があり得る要素の個数
     int count = v.size();
     int step;
     while (count > 0)
