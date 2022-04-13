@@ -39,3 +39,31 @@ int main()
     // 最適値の出力
     cout << dp[N][W] << endl;
 }
+
+// 個数制限なし部分和問題
+int main() {
+    // 入力
+    int N, W;
+    cin >> N >> W;
+    vector<int> a(N);
+    for (int i = 0; i < N; ++i) cin >> a[i];
+
+    // 最初のi個の整数のみを用いて、重複ありを許して総和をとった値をjにすることが可能かどうか
+    vector<vector<bool>> dp(N+1, vector<bool>(W+1, false));
+
+    // 初期条件
+    dp[0][0] = true;
+
+    // ループ
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j <= W; ++j) {
+            if (dp[i][j]) dp[i+1][j] = true;
+            // 個数制限1の場合、以下がdp[i][j-a[i]] になる
+            if (j >= a[i] && dp[i+1][j-a[i]]) dp[i+1][j] = true;
+        }
+    }
+
+    // 答え
+    if (dp[N][W]) cout << "Yes" << endl;
+    else cout << "No" << endl;
+}
