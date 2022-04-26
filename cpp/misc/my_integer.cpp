@@ -17,7 +17,7 @@ public:
         delete ptr;
     }
 
-    Integer(const Integer &r) : ptr(new int(*r.ptr)) {}
+    Integer(const Integer &r) : ptr(new int(*r.ptr)){}
     Integer &operator=(const Integer &r)
     {
         if (this != &r)
@@ -26,12 +26,14 @@ public:
         }
         return *this;
     }
-    // move
     Integer(Integer &&r) : ptr(r.ptr)
     {
         r.ptr = nullptr;
     }
-    Integer operator=(Integer &&r)
+    // 本では返り値が Integer になっていたが誤り
+    // (a = Integer(10)) = Integer(15);
+    // の結果が10になってしまう。また、returnするときにコピーコンストラクタが呼ばれる
+    Integer &operator=(Integer &&r)
     {
         delete ptr;
         ptr = r.ptr;
@@ -52,6 +54,7 @@ public:
 
     // lvalue
     // rvalue版があるので明示的に&が必要
+    // 当然ながら返り値はInteger &ではだめ。スタックの参照を返すから
     Integer operator-() const &
     {
         Integer result(-*ptr);
@@ -97,7 +100,7 @@ Integer operator+(const Integer &l, Integer &&r)
 }
 Integer operator+(Integer &&l, Integer &&r)
 {
-    // operator+(Integer &&l, const Integer &r) を呼んでいるだけ
+    // operator+(Integer&& l, const Integer& r) を呼んでいるだけ
     return std::move(l) + r;
 }
 
@@ -106,4 +109,7 @@ int main()
     Integer a(100);
     auto b = -(a + a);
     auto c = a + a + a;
+    (a = Integer(10)) = Integer(15);
+    // 15
+    std::cout << *a.ptr << std::endl;
 }
