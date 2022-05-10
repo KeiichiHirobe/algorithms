@@ -6,7 +6,7 @@
 #include <queue>
 #include <iomanip>
 // clang-format off
-#define rep(i,n) for(int i=0, i##_len=(n); i<i##_len; ++i)
+#define rep(i, s ,n) for(int i=s, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
 template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
 #define SZ(x) ((int)(x).size())
@@ -76,21 +76,21 @@ int main()
     cin >> m;
 
     vector<vector<long long>> v(n, vector<long long>(m, 0));
-    rep(i, n)
+    rep(i,0,n)
     {
-        rep(j, m)
+        rep(j,0,m)
         {
             cin >> v[i][j];
         }
     }
 
     ll max = 0;
-    rep(i, m)
+    rep(i, 0, m)
     {
         for (int j = i + 1; j < m; j++)
         {
             long long sum = 0;
-            rep(k, n)
+            rep(k, 0,  n)
             {
                 sum += std::max(v[k][i], v[k][j]);
             }
