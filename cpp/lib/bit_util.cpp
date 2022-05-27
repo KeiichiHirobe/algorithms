@@ -22,6 +22,24 @@ using namespace std;
 using Graph = vector<vector<int>>;
 // clang-format on
 
+// vの要素の中から適当に選んで和をwにできるか
+bool bubunwa(const vector<int> &v, int w) {
+    int N = v.size();
+    bool exist = false;
+    for (int bit = 0; bit < (1<<N); ++bit) {
+        int sum =0;
+        for (int i =0; i<N; ++i) {
+            if (bit & (1<<i)) {
+                sum += v[i];
+            }
+        }
+        if (sum==w) exist = true;
+    }
+}
+
+
+
+
 // https://qiita.com/drken/items/7c6ff2aa4d8fce1c9361
 
 // {2,3,5,7} のように必ずしも 0,1,…,9 のすべてが揃っているわけではない集合が与えられて、その部分集合を列挙する方法を考えます。
