@@ -146,9 +146,17 @@ struct Eratosthenes {
     // 整数 i を割り切る最小の素数
     vector<int> minfactor;
 
+    // メビウス関数値
+    // * μ(1)=1
+    // * nがある素数pで2回以上割り切れるとき、μ(n)=0
+    // * n=p1×p2×…pkと素因数分解できるとき、μ(n)=(−1)^K
+    vector<int> mobius;
+
     // コンストラクタで篩を回す
     Eratosthenes(int N) : isprime(N+1, true),
-                          minfactor(N+1, -1) {
+                          minfactor(N+1, -1),
+                          mobius(N+1,1) 
+                           {
         // 1 は予めふるい落としておく
         isprime[1] = false;
         minfactor[1] = 1;
@@ -160,6 +168,7 @@ struct Eratosthenes {
 
             // p についての情報更新
             minfactor[p] = p;
+            mobius[p] = -1;
 
             // p 以外の p の倍数から素数ラベルを剥奪
             for (int q = p * 2; q <= N; q += p) {
@@ -168,6 +177,9 @@ struct Eratosthenes {
 
                 // q は p で割り切れる旨を更新
                 if (minfactor[q] == -1) minfactor[q] = p;
+                // update mobius
+                if ((q / p) % p == 0) mobius[q] = 0;
+                else mobius[q] = -mobius[q];
             }
         }
     }
@@ -191,6 +203,7 @@ struct Eratosthenes {
     }  
 
     // 高速約数列挙
+    // 計算量はnの約数の個数をσ(n)として、O(σ(n))となります。n≤10^9の範囲では、σ(n)≤1344(n=735134400で最大)
     vector<int> divisors(int n) {
         vector<int> res({1});
 
@@ -211,6 +224,70 @@ struct Eratosthenes {
         return res;
     }
 };
+
+
+// 高速ゼータ変換
+// 正の整数nに対する関数f(n)があって、f(1),f(2),…,f(N)が与えられている状況を考えます。ただし n>Nのときf(n)=0であるものと仮定
+// F(n)=∑n|i f(i)
+// N=12の時
+// F(1)=f(1)+f(2)+f(3)+ . . .+f(12)
+// F(3)=f(3)+f(6)+f(9)+f(12)
+// F(11)=f(11)
+
+
+
+// 高速メビウス変換
+// 高速ゼータ変換の逆変換
+// N=12の時
+// f(1)=F(1)−F(2)−F(3)−F(5)−F(7)−F(11)+F(6)+F(10)
+// f(3)=F(3)−F(6)−F(9)
+// f(11)=F(11)
+
+// f(n)=∑n|i μ(i/n)F(i)
+// となることが知られる
+
+
+// 高速ゼータ変換
+// 入力 f が in-place に更新されて、F になる
+template<class T> void fast_zeta(vector<T> &f) {
+    int N = f.size();
+
+    // エラトステネスの篩を用いて素数を列挙
+    vector<bool> isprime = Eratosthenes(N).isprime;
+
+    // 各素数 p 軸に対して
+    // 大きい座標 (k * p) から小さい座標 (k) へと足し込む
+    for (int p = 2; p < N; ++p) {
+        if (!isprime[p]) continue;
+
+        // 座標が大きい方を起点として累積和をとる
+        // Nは0-indexのサイズなので最後の数字はN-1
+        for (int k = (N - 1) / p; k >= 1; --k) {
+            f[k] += f[k * p];
+        }
+    }
+}
+
+// 高速メビウス変換
+// 入力 F が in-place に更新されて、f になる
+template<class T> void fast_mobius(vector<T> &F) {
+    int N = F.size();
+
+    // エラトステネスの篩を用いて素数を列挙
+    vector<bool> isprime = Eratosthenes(N).isprime;
+
+    // 各素数 p 軸に対して
+    // 小さい座標 (k) から大きい座標 (k * p) を引いていく
+    for (int p = 2; p < N; ++p) {
+        if (!isprime[p]) continue;
+
+        // 座標が小さい方を起点として差分をとる
+        for (int k = 1; k * p < N; ++k) {
+            F[k] -= F[k * p];
+        }
+    }
+}
+
 
 // 中国の剰余定理
 // https://qiita.com/drken/items/ae02240cd1f8edfc86fd
@@ -243,30 +320,4 @@ pair<long long, long long> ChineseRem(const vector<long long> &b, const vector<l
         M *= m[i] / d;
     }
     return make_pair(normalize_mod(r, M), M);
-}
-
-// /usr/bin/clang++ --std c++17 /Users/keiichi/go/src/github.com/algorithms/cpp/lib/math.cpp -o ./out  -L/usr/local/lib -lgtest -lgtest_main
-TEST(extendEuclid, wikipedia)
-{
-    long long x;
-    long long y;
-    long long gcd;
-    gcd = extGCD(1071, 1029, x, y);
-    EXPECT_EQ(gcd, 21);
-    EXPECT_EQ(x, -24);
-    EXPECT_EQ(y, 25);
-    // a < bでも無問題
-    gcd = extGCD(1029, 1071, x, y);
-    EXPECT_EQ(gcd, 21);
-    EXPECT_EQ(x, 25);
-    EXPECT_EQ(y, -24);
-}
-
-TEST(primefactor, 2020)
-{
-    const auto &ret = prime_factorize(2020);
-    vector<pair<long long, long long>> expected{{2, 2},
-                                                {5, 1},
-                                                {101, 1}};
-    EXPECT_EQ(ret, expected);
 }
