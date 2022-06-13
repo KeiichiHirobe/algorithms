@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <gtest/gtest.h>
+#include <random>
 using namespace std;
 
 // https://qiita.com/drken/items/b97ff231e43bce50199a
@@ -131,7 +132,6 @@ long long COM(int n, int k)
     return fac[n] * (finv[k] * finv[n - k] % MOD) % MOD;
 }
 
-
 // エラトステネスの篩を使って、1,2,,Nの素因数分解をNlogNにする
 // 愚直にやるとN*N^{1/2}
 
@@ -139,7 +139,8 @@ long long COM(int n, int k)
 // https://qiita.com/drken/items/3beb679e54266f20ab63#4-1-%E9%AB%98%E9%80%9F%E7%B4%A0%E5%9B%A0%E6%95%B0%E5%88%86%E8%A7%A3
 
 // エラトステネスの篩
-struct Eratosthenes {
+struct Eratosthenes
+{
     // テーブル
     vector<bool> isprime;
 
@@ -153,69 +154,82 @@ struct Eratosthenes {
     vector<int> mobius;
 
     // コンストラクタで篩を回す
-    Eratosthenes(int N) : isprime(N+1, true),
-                          minfactor(N+1, -1),
-                          mobius(N+1,1) 
-                           {
+    Eratosthenes(int N) : isprime(N + 1, true),
+                          minfactor(N + 1, -1),
+                          mobius(N + 1, 1)
+    {
         // 1 は予めふるい落としておく
         isprime[1] = false;
         minfactor[1] = 1;
 
         // 篩
-        for (int p = 2; p <= N; ++p) {
+        for (int p = 2; p <= N; ++p)
+        {
             // すでに合成数であるものはスキップする
-            if (!isprime[p]) continue;
+            if (!isprime[p])
+                continue;
 
             // p についての情報更新
             minfactor[p] = p;
             mobius[p] = -1;
 
             // p 以外の p の倍数から素数ラベルを剥奪
-            for (int q = p * 2; q <= N; q += p) {
+            for (int q = p * 2; q <= N; q += p)
+            {
                 // q は合成数なのでふるい落とす
                 isprime[q] = false;
 
                 // q は p で割り切れる旨を更新
-                if (minfactor[q] == -1) minfactor[q] = p;
+                if (minfactor[q] == -1)
+                    minfactor[q] = p;
                 // update mobius
-                if ((q / p) % p == 0) mobius[q] = 0;
-                else mobius[q] = -mobius[q];
+                if ((q / p) % p == 0)
+                    mobius[q] = 0;
+                else
+                    mobius[q] = -mobius[q];
             }
         }
     }
 
     // 高速素因数分解
     // pair (素因子, 指数) の vector を返す
-    vector<pair<int,int>> factorize(int n) {
-        vector<pair<int,int>> res;
-        while (n > 1) {
+    vector<pair<int, int>> factorize(int n)
+    {
+        vector<pair<int, int>> res;
+        while (n > 1)
+        {
             int p = minfactor[n];
             int exp = 0;
 
             // n で割り切れる限り割る
-            while (minfactor[n] == p) {
+            while (minfactor[n] == p)
+            {
                 n /= p;
                 ++exp;
             }
             res.emplace_back(p, exp);
         }
         return res;
-    }  
+    }
 
     // 高速約数列挙
     // 計算量はnの約数の個数をσ(n)として、O(σ(n))となります。n≤10^9の範囲では、σ(n)≤1344(n=735134400で最大)
-    vector<int> divisors(int n) {
+    vector<int> divisors(int n)
+    {
         vector<int> res({1});
 
         // n を素因数分解 (メンバ関数使用)
         auto pf = factorize(n);
 
         // 約数列挙
-        for (auto p : pf) {
+        for (auto p : pf)
+        {
             int s = (int)res.size();
-            for (int i = 0; i < s; ++i) {
+            for (int i = 0; i < s; ++i)
+            {
                 int v = 1;
-                for (int j = 0; j < p.second; ++j) {
+                for (int j = 0; j < p.second; ++j)
+                {
                     v *= p.first;
                     res.push_back(res[i] * v);
                 }
@@ -225,7 +239,6 @@ struct Eratosthenes {
     }
 };
 
-
 // 高速ゼータ変換
 // 正の整数nに対する関数f(n)があって、f(1),f(2),…,f(N)が与えられている状況を考えます。ただし n>Nのときf(n)=0であるものと仮定
 // F(n)=∑n|i f(i)
@@ -233,8 +246,6 @@ struct Eratosthenes {
 // F(1)=f(1)+f(2)+f(3)+ . . .+f(12)
 // F(3)=f(3)+f(6)+f(9)+f(12)
 // F(11)=f(11)
-
-
 
 // 高速メビウス変換
 // 高速ゼータ変換の逆変換
@@ -246,10 +257,11 @@ struct Eratosthenes {
 // f(n)=∑n|i μ(i/n)F(i)
 // となることが知られる
 
-
 // 高速ゼータ変換
 // 入力 f が in-place に更新されて、F になる
-template<class T> void fast_zeta(vector<T> &f) {
+template <class T>
+void fast_zeta(vector<T> &f)
+{
     int N = f.size();
 
     // エラトステネスの篩を用いて素数を列挙
@@ -257,12 +269,15 @@ template<class T> void fast_zeta(vector<T> &f) {
 
     // 各素数 p 軸に対して
     // 大きい座標 (k * p) から小さい座標 (k) へと足し込む
-    for (int p = 2; p < N; ++p) {
-        if (!isprime[p]) continue;
+    for (int p = 2; p < N; ++p)
+    {
+        if (!isprime[p])
+            continue;
 
         // 座標が大きい方を起点として累積和をとる
         // Nは0-indexのサイズなので最後の数字はN-1
-        for (int k = (N - 1) / p; k >= 1; --k) {
+        for (int k = (N - 1) / p; k >= 1; --k)
+        {
             f[k] += f[k * p];
         }
     }
@@ -270,7 +285,9 @@ template<class T> void fast_zeta(vector<T> &f) {
 
 // 高速メビウス変換
 // 入力 F が in-place に更新されて、f になる
-template<class T> void fast_mobius(vector<T> &F) {
+template <class T>
+void fast_mobius(vector<T> &F)
+{
     int N = F.size();
 
     // エラトステネスの篩を用いて素数を列挙
@@ -278,16 +295,18 @@ template<class T> void fast_mobius(vector<T> &F) {
 
     // 各素数 p 軸に対して
     // 小さい座標 (k) から大きい座標 (k * p) を引いていく
-    for (int p = 2; p < N; ++p) {
-        if (!isprime[p]) continue;
+    for (int p = 2; p < N; ++p)
+    {
+        if (!isprime[p])
+            continue;
 
         // 座標が小さい方を起点として差分をとる
-        for (int k = 1; k * p < N; ++k) {
+        for (int k = 1; k * p < N; ++k)
+        {
             F[k] -= F[k * p];
         }
     }
 }
-
 
 // 中国の剰余定理
 // https://qiita.com/drken/items/ae02240cd1f8edfc86fd
@@ -320,4 +339,23 @@ pair<long long, long long> ChineseRem(const vector<long long> &b, const vector<l
         M *= m[i] / d;
     }
     return make_pair(normalize_mod(r, M), M);
+}
+
+// 乱数でshuffle
+random_device rnd; // 非決定的な乱数生成器
+mt19937 mt(rnd());   // メルセンヌ・ツイスタの32ビット版
+
+template <typename T>
+void shuffleV(vector<T> &v)
+{
+    shuffle(v.begin(), v.end(), mt);
+}
+
+// 0~n-1までをshuffle
+vector<int> shuffleSeq(int n)
+{
+    vector<int> v(n);
+    iota(v.begin(), v.end(), 0);
+    shuffleV(v);
+    return v;
 }

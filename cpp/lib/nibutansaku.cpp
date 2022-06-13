@@ -28,7 +28,7 @@ using Graph = vector<vector<int>>;
 // 存在しない場合は-1
 int binary_search(const vector<int> &v, const int &value)
 {
-    int left = 0, right = (int)a.size() - 1;
+    int left = 0, right = (int)v.size() - 1;
     while (left <= right)
     {
         int mid = (left + right) / 2;
@@ -49,8 +49,9 @@ int binary_search(const vector<int> &v, const int &value)
 }
 
 // lower_boundを実装したもの
-int my_lower_bound(const vector<int> &v, const int &value) {
-    int left = 0, right = (int)a.size() - 1;
+int my_lower_bound(const vector<int> &v, const int &value)
+{
+    int left = 0, right = (int)v.size() - 1;
     while (left <= right)
     {
         int mid = (left + right) / 2;
@@ -85,7 +86,6 @@ int binary_search_min_ok(int ng, int ok, function<bool(int)> P)
     }
     return ok;
 }
-
 
 // 処理系の実装
 // ref: https://en.cppreference.com/w/cpp/algorithm/lower_bound
