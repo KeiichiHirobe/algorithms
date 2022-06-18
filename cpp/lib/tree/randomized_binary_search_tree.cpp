@@ -298,6 +298,7 @@ int main()
                 cout << -1 << endl;
                 continue;
             }
+            // K番目に大きい値を取得して削除
             long long res = S.get(K - 1);
             cout << res << endl;
             S.erase(res);
