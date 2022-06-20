@@ -9,13 +9,9 @@
 #define rep(i, s ,n) for(int i=s, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
 template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
-#define SZ(x) ((int)(x).size())
 using ll = long long;
 // 2^60
-const ll INF = 1LL << 60;
-// lower_bound(ALL(a), 4)
-#define ALL(a)  (a).begin(),(a).end()
-int gcd(int a,int b){return b?gcd(b,a%b):a;}
+#define INF (1LL << 60)
 int dx[4]={1,0,-1,0};
 int dy[4]={0,1,0,-1};
 using namespace std;
@@ -76,9 +72,9 @@ int main()
     cin >> m;
 
     vector<vector<long long>> v(n, vector<long long>(m, 0));
-    rep(i,0,n)
+    rep(i, 0, n)
     {
-        rep(j,0,m)
+        rep(j, 0, m)
         {
             cin >> v[i][j];
         }
@@ -90,7 +86,7 @@ int main()
         for (int j = i + 1; j < m; j++)
         {
             long long sum = 0;
-            rep(k, 0,  n)
+            rep(k, 0, n)
             {
                 sum += std::max(v[k][i], v[k][j]);
             }
