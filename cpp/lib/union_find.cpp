@@ -37,6 +37,20 @@ struct UnionFind
         return true;
     }
 
+    // グループを返却する
+    vector<vector<int>> groups()
+    {
+        vector<vector<int>> g(par.size());
+        for (int i = 0; i < par.size(); ++i)
+        {
+            g[root(i)].push_back(i);
+        }
+        auto result = std::remove_if(g.begin(), g.end(), [](auto &x)
+                                     { return x.empty(); } );
+        g.erase(result, g.end());
+        return g;
+    }
+
     // x を含むグループのサイズ
     int size(int x)
     {
