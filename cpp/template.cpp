@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <map>
+#include <functional>
 #include <algorithm>
 #include <queue>
 #include <iomanip>
