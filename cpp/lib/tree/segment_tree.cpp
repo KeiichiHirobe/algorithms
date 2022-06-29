@@ -26,8 +26,6 @@ using Graph = vector<vector<int>>;
     set(int i, T x), build(): i番目の要素をxにセット。buildにてまとめてセグ木を構築する。O(n)
     update(a,b,m): [a,b)を mにて加算や上書き。O(log(n))
     query(a,b): [a,b) での結果を取得。O(log(n))
-    find_rightest(a,b,x): [a,b) で 結果がx以下となる最右位置を求める。O(log(n))
-    find_leftest(a,b,x): [a,b) で 結果がx以下となる最左位置を求める。O(log(n))
 */
 
 // X: 知りたい結果の型
@@ -125,13 +123,23 @@ struct SegTree
             return fxx(vl, vr);
         }
     }
-    int find_rightest(int a, int b, X x) { return find_rightest_sub(a, b, x, 0, 0, n); }
-    int find_leftest(int a, int b, X x) { return find_leftest_sub(a, b, x, 0, 0, n); }
-    int find_rightest_sub(int a, int b, X x, int k, int l, int r)
+    // ノードがminの場合
+    // find_rightest_less(a,b,x): [a,b) で 結果がx以下となる最右位置を求める。O(log(n))
+    int find_rightest_less(int a, int b, X x) { return find_rightest_sub(a, b, x, 0, 0, n, true); }
+    // find_leftest_less(a,b,x): [a,b) で 結果がx以下となる最左位置を求める。O(log(n))
+    int find_leftest_less(int a, int b, X x) { return find_leftest_sub(a, b, x, 0, 0, n, true); }
+
+    // ノードがmaxの場合
+    // find_rightest_greater(a,b,x): [a,b) で 結果がx以上となる最右位置を求める。O(log(n))
+    int find_rightest_greater(int a, int b, X x) { return find_rightest_sub(a, b, x, 0, 0, n, false); }
+    // find_leftest_greater(a,b,x): [a,b) で 結果がx以上となる最左位置を求める。O(log(n))
+    int find_leftest_greater(int a, int b, X x) { return find_leftest_sub(a, b, x, 0, 0, n, false); }
+
+    int find_rightest_sub(int a, int b, X x, int k, int l, int r, bool less)
     {
         eval(k, r - l);
-        if (dat[k] > x || r <= a || b <= l)
-        { // 自分の値がxより大きい or [a,b)が[l,r)の範囲外ならreturn a-1
+        if ((less && dat[k] > x) || (!less && dat[k] < x) || r <= a || b <= l)
+        {
             return a - 1;
         }
         else if (k >= n - 1)
@@ -140,22 +148,22 @@ struct SegTree
         }
         else
         {
-            int vr = find_rightest_sub(a, b, x, 2 * k + 2, (l + r) / 2, r);
+            int vr = find_rightest_sub(a, b, x, 2 * k + 2, (l + r) / 2, r, less);
             if (vr != a - 1)
             { // 右の部分木を見て a-1 以外ならreturn
                 return vr;
             }
             else
             { // 左の部分木を見て値をreturn
-                return find_rightest_sub(a, b, x, 2 * k + 1, l, (l + r) / 2);
+                return find_rightest_sub(a, b, x, 2 * k + 1, l, (l + r) / 2, less);
             }
         }
     }
-    int find_leftest_sub(int a, int b, X x, int k, int l, int r)
+    int find_leftest_sub(int a, int b, X x, int k, int l, int r, bool less)
     {
         eval(k, r - l);
-        if (dat[k] > x || r <= a || b <= l)
-        { // 自分の値がxより大きい or [a,b)が[l,r)の範囲外ならreturn b
+        if ((less && dat[k] > x) || (!less && dat[k] < x) || r <= a || b <= l)
+        {
             return b;
         }
         else if (k >= n - 1)
@@ -164,14 +172,43 @@ struct SegTree
         }
         else
         {
-            int vl = find_leftest_sub(a, b, x, 2 * k + 1, l, (l + r) / 2);
+            int vl = find_leftest_sub(a, b, x, 2 * k + 1, l, (l + r) / 2, less);
             if (vl != b)
             { // 左の部分木を見て b 以外ならreturn
                 return vl;
             }
             else
             { // 右の部分木を見て値をreturn
-                return find_leftest_sub(a, b, x, 2 * k + 2, (l + r) / 2, r);
+                return find_leftest_sub(a, b, x, 2 * k + 2, (l + r) / 2, r, less);
+            }
+        }
+    }
+
+    // ノードがsumの場合
+    // sum_lower_bound(a,b,x): [a,b) で aからの合計がx以上となる最左位置を求める。O(log(n))
+    int sum_lower_bound(int a, int b, X x) { return find_leftest_sum_sub(a, b, x, 0, 0, n).first; }
+
+    pair<int, X> find_leftest_sum_sub(int a, int b, X x, int k, int l, int r)
+    {
+        eval(k, r - l);
+        if (dat[k] < x || r <= a || b <= l)
+        {
+            return {b, x - dat[k]};
+        }
+        else if (k >= n - 1)
+        { // 自分が葉ならその位置をreturn
+            return {k - (n - 1), x - dat[k]};
+        }
+        else
+        {
+            auto [vl, rest] = find_leftest_sum_sub(a, b, x, 2 * k + 1, l, (l + r) / 2);
+            if (vl != b)
+            { // 左の部分木を見て b 以外ならreturn
+                return {vl, rest};
+            }
+            else
+            { // 右の部分木を見て値をreturn
+                return find_leftest_sum_sub(a, b, rest, 2 * k + 2, (l + r) / 2, r);
             }
         }
     }
@@ -336,8 +373,113 @@ void AddAndSum()
     }
 }
 
+// https://atcoder.jp/contests/arc033/tasks/arc033_3
+// 数の集合 S に対する以下のクエリを処理してください。
+// タイプ 1 ： S に数 X を追加する。
+// タイプ 2 ： S に含まれる数のうち X 番目に小さい数を答え、その数を S から削除する。
+
+// シンプルに区間に和を保持。find_leftest_sumで取得
+void AddAndSumLowerBound()
+{
+    cout << fixed << setprecision(16);
+    // 0,1, ... 200000
+    int n = 200001;
+
+    int q;
+    cin >> q;
+
+    using X = ll;
+    using M = ll;
+    auto fxx = [](X x1, X x2) -> X
+    { return x1 + x2; };
+    auto fxm = [](X x, M m) -> X
+    { return x + m; };
+    auto fmm = [](M m1, M m2) -> M
+    { return m1 + m2; };
+    auto fml = [](M m, ll size) -> M
+    { return m * size; };
+
+    ll ex = 0;
+    ll em = 0;
+    SegTree<X, M> rmq(n, fxx, fxm, fmm, ex, em, fml);
+
+    vector<ll> ans;
+    rep(i, 0, q)
+    {
+        int c;
+        int x;
+        cin >> c;
+        cin >> x;
+        if (c == 1)
+        {
+            rmq.update(x, x + 1, 1);
+        }
+        else
+        {
+            // 1-index
+            int idx = rmq.sum_lower_bound(0, n, x);
+            ans.push_back(idx);
+            rmq.update(idx, idx + 1, -1);
+        }
+    }
+    for (auto x : ans)
+    {
+        cout << x << endl;
+    }
+}
+
+// AddAndSumLowerBoundの別解
+// 追加時にX以上の区間に全て1を足す
+// ノードにmaxを持たせる
+// find_leftest_greater(0,n,x): 全区間で結果がx以上となる最左位置を求める。O(log(n))
+void AddAndMaxLowerBound()
+{
+    cout << fixed << setprecision(16);
+    // 0,1, ... 200000
+    int n = 200001;
+
+    int q;
+    cin >> q;
+
+    using X = ll;
+    using M = ll;
+    auto fxx = [](X x1, X x2) -> X
+    { return max(x1, x2); };
+    auto fxm = [](X x, M m) -> X
+    { return x + m; };
+    auto fmm = [](M m1, M m2) -> M
+    { return m1 + m2; };
+    ll ex = 0;
+    ll em = 0;
+    SegTree<X, M> rmq(n, fxx, fxm, fmm, ex, em);
+
+    vector<ll> ans;
+    rep(i, 0, q)
+    {
+        int c;
+        int x;
+        cin >> c;
+        cin >> x;
+        if (c == 1)
+        {
+            rmq.update(x, n, 1);
+        }
+        else
+        {
+            // 1-index
+            int idx = rmq.find_leftest_greater(0, n, x);
+            ans.push_back(idx);
+            rmq.update(idx, n, -1);
+        }
+    }
+    for (auto x : ans)
+    {
+        cout << x << endl;
+    }
+}
+
 int main()
 {
     // OverWriteAndMin();
-    AddAndSum();
+    AddAndSumLowerBound();
 }
