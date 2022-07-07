@@ -215,6 +215,7 @@ struct SegTree
 };
 
 // 上書き更新 -> 最小値
+// 上書き更新 -> 和の場合、em=0とすると要素の0への更新が反映されないので誤り。-1など要素としてありえない数字にする
 void OverWriteAndMin()
 {
     cout << fixed << setprecision(16);

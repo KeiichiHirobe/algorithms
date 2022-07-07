@@ -1,10 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cassert>
 #include <map>
 #include <functional>
 #include <algorithm>
 #include <queue>
+#include <set>
+#include <unordered_set>
 #include <iomanip>
 // clang-format off
 #define rep(i, s ,n) for(int i=s, i##_len=(n); i<i##_len; ++i)
@@ -17,6 +20,7 @@ int dx[4]={1,0,-1,0};
 int dy[4]={0,1,0,-1};
 using namespace std;
 using Graph = vector<vector<int>>;
+// /usr/bin/clang++ -std=c++17 -stdlib=libc++ -g -Wall -Wextra /Users/keiichi/go/src/github.com/algorithms/cpp/atcoder/abc258/a.cpp -o /Users/keiichi/go/src/github.com/algorithms/cpp/atcoder/abc258/a
 // clang-format on
 
 // 幅優先の例
