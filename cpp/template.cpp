@@ -1,14 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <cassert>
-#include <map>
-#include <functional>
-#include <algorithm>
-#include <queue>
-#include <set>
-#include <unordered_set>
-#include <iomanip>
+#include <bits/stdc++.h>
 // clang-format off
 #define rep(i, s ,n) for(int i=s, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
@@ -20,7 +10,6 @@ int dx[4]={1,0,-1,0};
 int dy[4]={0,1,0,-1};
 using namespace std;
 using Graph = vector<vector<int>>;
-// /usr/bin/clang++ -std=c++17 -stdlib=libc++ -g -Wall -Wextra /Users/keiichi/go/src/github.com/algorithms/cpp/atcoder/abc258/a.cpp -o /Users/keiichi/go/src/github.com/algorithms/cpp/atcoder/abc258/a
 // clang-format on
 
 // 幅優先の例
@@ -53,50 +42,27 @@ vector<int> BFS(const Graph &G, int s)
     return dist;
 }
 
-// 深さ優先探索
-// CAUTION:
-// seen.assign(N, false);
-vector<bool> seen;
-void dfs(const Graph &G, int v)
-{
-    seen[v] = true;
-    for (auto next_v : G[v])
-    {
-        if (seen[next_v])
-            continue;
-        dfs(G, next_v);
-    }
-}
-
 int main()
 {
     cout << fixed << setprecision(16);
-    int n;
-    int m;
-    cin >> n;
-    cin >> m;
-
-    vector<vector<long long>> v(n, vector<long long>(m, 0));
-    rep(i, 0, n)
+    int n,s,t;
+    cin >> n >> s >> t;
+    vector<bool> seen(n, false);
+    Graph G(n);
+    auto dfs = [&seen, &G](auto &&f, int v) -> void
     {
-        rep(j, 0, m)
+        seen[v] = true;
+        for (auto next_v : G[v])
         {
-            cin >> v[i][j];
+            if (seen[next_v])
+                continue;
+            f(f, next_v);
         }
+    };
+    dfs(dfs, s);
+    if (seen[t]) {
+        cout << "Yes" << endl;
+    } else {
+        cout << "No" << endl;
     }
-
-    ll max = 0;
-    rep(i, 0, m)
-    {
-        for (int j = i + 1; j < m; j++)
-        {
-            long long sum = 0;
-            rep(k, 0, n)
-            {
-                sum += std::max(v[k][i], v[k][j]);
-            }
-            chmax(max, sum);
-        }
-    }
-    cout << max << endl;
 }

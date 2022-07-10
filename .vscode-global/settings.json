@@ -1,0 +1,85 @@
+{
+    // https://blog.knshnb.com/posts/vscode-setup-competitive/
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.minimap.enabled": false,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.formatOnSave": true,
+    // alwaysでもいいかもしれない
+    "editor.autoClosingOvertype": "auto",
+    "files.autoSave": "afterDelay",
+    // VSCodeのUI
+    "workbench.statusBar.visible": true,
+    "workbench.activityBar.visible": true,
+    "workbench.sideBar.location": "left",
+    "workbench.startupEditor": "newUntitledFile",
+    "workbench.panel.defaultLocation": "right",
+    "workbench.settings.editor": "json",
+    "workbench.settings.openDefaultSettings": true,
+    // vim
+    // どれも使っていない機能ではある
+    "vim.visualstar": true,
+    "vim.hlsearch": true,
+    "vim.leader": "<space>",
+    "vim.easymotion": true,
+    // keybindings.jsonにて、ctrl+c　にてcode-runnerが実行するようになっている
+    "code-runner.runInTerminal": true,
+    "code-runner.executorMap": {
+        // 自分で実行したいコマンドを設定する
+        // $dir, $fileNameはそれぞれ編集中のファイルのディレクトリ、ファイル名を表す
+        // macの場合デフォルトだとg++はclang++に対するエイリアスになっているので以下を設定済みであることを想定
+        // alias g++='/usr/local/bin/g++-11'
+        // -include file はファイルの先頭に #include file したように振る舞う
+        "cpp": "cd $dir && g++ -std=c++17 -O0 -g -Wshadow=local -Wall  -Wextra -Wno-sign-compare -D_GLIBCXX_DEBUG $fileName && ./a.out",
+    },
+    "code-runner.saveFileBeforeRun": true,
+    "code-runner.preserveFocus": false,
+    "code-runner.ignoreSelection": true,
+
+    // 以下、自己拡張
+
+    // 以前はintelsenseに認識させるために、PRJの.vscode以下のcpp_properties.jsonに記述する必要があった
+    // C_Cpp.default. にてglobalに設定できるようになった
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/**"
+    ],
+    "C_Cpp.default.compilerPath": "/usr/local/bin/g++-11",
+    "C_Cpp.default.intelliSenseMode": "macos-gcc-x64",
+
+    // debuggerの設定
+    // g++ -g する必要があることに注意
+    "launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+                "name": "C++ debug",
+                "type": "cppdbg",
+                "request": "launch",
+                // debug対象のbuild済みのプログラム
+                "program": "${fileDirname}/a.out",
+                "args": [],
+                // 以下をtrueにすると挙動が不安定になる
+                "stopAtEntry": false,
+                "cwd": "${fileDirname}",
+                "environment": [],
+                "externalConsole": true,
+                "MIMode": "lldb",
+            }
+		]
+	},
+
+    "editor.fontSize": 10,
+    "editor.renderWhitespace": "all",
+    "editor.wordWrap": "on",
+ 
+    "files.exclude": {
+        "**/*.dSYM": true
+    },
+    "files.autoGuessEncoding": true,
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.enablePreviewFromQuickOpen": false,
+    "rust-client.rustupPath": "/Users/keiichi/.cargo/bin/rustup",
+}
