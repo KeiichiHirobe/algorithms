@@ -27,7 +27,7 @@ bitDP
 https://qiita.com/drken/items/7c6ff2aa4d8fce1c9361#11-bit-dp
 https://algo-logic.info/bit-dp/
 
-集合に対してDPを行うフレームワーク
+集合の順序に対してDPを行うフレームワーク
 
 dp[S] := 全体集合 {0,1,…,n−1} の部分集合Sについて、その中で順序を最適化したときの、Sの中での最小コスト
 
