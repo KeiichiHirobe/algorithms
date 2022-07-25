@@ -1,0 +1,3 @@
+[submodule "cpp/ac-library"]
+	path = cpp/ac-library
+	url = https://github.com/atcoder/ac-library.git

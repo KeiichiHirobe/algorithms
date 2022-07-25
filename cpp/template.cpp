@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <atcoder/all>
 // clang-format off
 #define rep(i, s ,n) for(int i=s, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
@@ -9,6 +10,7 @@ using ll = long long;
 int dx[4]={1,0,-1,0};
 int dy[4]={0,1,0,-1};
 using namespace std;
+using namespace atcoder;
 using Graph = vector<vector<int>>;
 // clang-format on
 
