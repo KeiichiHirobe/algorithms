@@ -103,12 +103,20 @@ long long modinv(long long a, long long mod)
 // aの逆元がp%aの逆元で表現できることを利用している
 // https://drken1215.hatenablog.com/entry/2018/06/08/210000
 
+// nCrの性質
+// https://manabitimes.jp/math/588
+
 const int MAX = 510000;
 const int MOD = 1000000007;
 
 long long fac[MAX], finv[MAX], inv[MAX];
 
 // テーブルを作る前処理
+// k! (k!)^-1 の計算なので他の用途でも使える
+// 以下条件
+// * n > 10^7
+// * MODは素数
+// * MOD > n
 void COMinit()
 {
     fac[0] = fac[1] = 1;

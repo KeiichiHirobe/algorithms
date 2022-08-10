@@ -7,3 +7,7 @@ https://github.com/drken1215/book_algorithm_solution/blob/master/solutions/chap0
 
 部分和問題にさらに和に利用した数の制限が発生する。「Aのうち、l個の和をSの倍数にできるか」
 https://atcoder.jp/contests/abc262/editorial/4503
+
+配列の大きさは1e7くらいがギリギリの大きさであることに注意。実は部分和問題やナップサック問題は1次元配列で良い。
+
+また、debug関連のオプションがあるとメモリallocateや実行がかなり遅くなるので遅い場合は外してみると良い

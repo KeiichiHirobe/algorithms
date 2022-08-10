@@ -35,10 +35,13 @@ Point operator+(const Point &p, const Point &q) { return Point(p.x + q.x, p.y + 
 Point operator-(const Point &p, const Point &q) { return Point(p.x - q.x, p.y - q.y); }
 Point operator*(const Point &p, DD a) { return Point(p.x * a, p.y * a); }
 Point operator*(DD a, const Point &p) { return Point(a * p.x, a * p.y); }
-// 用途は謎
-Point operator*(const Point &p, const Point &q) { return Point(p.x * q.x - p.y * q.y, p.x * q.y + p.y * q.x); }
 Point operator/(const Point &p, DD a) { return Point(p.x / a, p.y / a); }
 
+// https://eman-physics.net/math/imaginary01.html
+// 複素数同士の掛け算は複素数平面で考えるとわかりやすい
+// 掛け算は元の数値にその絶対値を掛け,その偏角の分だけ元の数値を複素平面上で回転させるという意味を持つ
+Point operator*(const Point &p, const Point &q) { return Point(p.x * q.x - p.y * q.y, p.x * q.y + p.y * q.x); }
+// 複素数平面だと共役な複素数
 Point conj(const Point &p) { return Point(p.x, -p.y); }
 Point rot(const Point &p, DD ang) { return Point(cos(ang) * p.x - sin(ang) * p.y, sin(ang) * p.x + cos(ang) * p.y); }
 Point rot90(const Point &p) { return Point(-p.y, p.x); }
@@ -99,7 +102,9 @@ DD distance(const Line &l, const Point &a)
     return abs(cross(x, y)) / abs(x);
 }
 
-// 円や直線の交点
+// 二つの直線の交点を求める
+// 線分ではないことに注意。そのため、平行でなければ必ず交点がある
+// 平行の場合は空を返す
 vector<Point> crosspoint(const Line &l, const Line &m)
 {
     vector<Point> res;

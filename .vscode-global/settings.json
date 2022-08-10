@@ -32,7 +32,7 @@
         // macの場合デフォルトだとg++はclang++に対するエイリアスになっているので以下を設定済みであることを想定
         // alias g++='/usr/local/bin/g++-11'
         // -include file はファイルの先頭に #include file したように振る舞う
-        "cpp": "cd $dir && g++ -std=c++17 -I  $workspaceRoot/cpp/ac-library -O0 -g -Wshadow=local -Wall  -Wextra -D_GLIBCXX_DEBUG -fsanitize=undefined,address $fileName",
+        "cpp": "cd $dir && g++ -std=c++17 -I  $workspaceRoot/cpp/ac-library -O0 -g -Wshadow=local -Wall  -Wextra -D_GLIBCXX_DEBUG -fsanitize=undefined,address $fileName && ./a.out",
     },
     "code-runner.saveFileBeforeRun": true,
     "code-runner.preserveFocus": false,
