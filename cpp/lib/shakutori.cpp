@@ -25,6 +25,10 @@ using namespace std;
 #include <vector>
 using namespace std;
 
+// 尺取法のポイントは幅が0になった時(left==right)に忘れずにrightもインクリメントしてあげること
+// https://qiita.com/drken/items/ecd1a472d3a0e7db8dce
+// https://atcoder.jp/contests/abc265/editorial/4688
+
 // https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DSL_3_C&lang=jp
 // a_{l} + a_{l+1} + .. + a_{r-1} + a_{r} <= x を満たす(l,r) の組の個数
 int main()
