@@ -4,6 +4,20 @@
 #include <random>
 using namespace std;
 
+// memo:
+// 場合の数
+// https://manabitimes.jp/math/1101
+// 包除原理 
+// https://manabitimes.jp/math/612
+// https://manabitimes.jp/math/892
+// https://atcoder.jp/contests/abc246/editorial/3703
+// __builtin_popcountll
+// にて、bitcountした方がlonglongにも対応
+
+
+// end memo
+
+
 // https://qiita.com/drken/items/b97ff231e43bce50199a
 // 返り値: gcd(a,b)
 // ax+by=gcd(a,b) を満たす(x,y)が格納される
@@ -130,7 +144,17 @@ void COMinit()
     }
 }
 
-// 二項係数計算
+// nPk
+long long PER(int n, int k)
+{
+    if (n < k)
+        return 0;
+    if (n < 0 || k < 0)
+        return 0;
+    return fac[n] * finv[n - k] % MOD;
+}
+
+// nCk
 long long COM(int n, int k)
 {
     if (n < k)
@@ -351,7 +375,7 @@ pair<long long, long long> ChineseRem(const vector<long long> &b, const vector<l
 
 // 乱数でshuffle
 random_device rnd; // 非決定的な乱数生成器
-mt19937 mt(rnd());   // メルセンヌ・ツイスタの32ビット版
+mt19937 mt(rnd()); // メルセンヌ・ツイスタの32ビット版
 
 template <typename T>
 void shuffleV(vector<T> &v)
