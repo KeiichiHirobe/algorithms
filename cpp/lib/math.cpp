@@ -7,16 +7,14 @@ using namespace std;
 // memo:
 // 場合の数
 // https://manabitimes.jp/math/1101
-// 包除原理 
+// 包除原理
 // https://manabitimes.jp/math/612
 // https://manabitimes.jp/math/892
 // https://atcoder.jp/contests/abc246/editorial/3703
 // __builtin_popcountll
 // にて、bitcountした方がlonglongにも対応
 
-
 // end memo
-
 
 // https://qiita.com/drken/items/b97ff231e43bce50199a
 // 返り値: gcd(a,b)
@@ -164,7 +162,6 @@ long long COM(int n, int k)
     return fac[n] * (finv[k] * finv[n - k] % MOD) % MOD;
 }
 
-
 // modを必要としないときにnCkがたくさん必要な場合
 // パスカルの3角形
 // 50C25 = 1e14ほどになることに注意
@@ -174,21 +171,25 @@ long long COM(int n, int k)
     前処理: O(MAX_N*MAX_N)
     nCk(n,k): nCk の計算。O(1)
 */
-const int MAX_N = 50;         // n の最大値
-vector<vector<long long>> com;  // 前計算の結果を保存
+const int MAX_N = 60;          // nの最大値 - 1。60だとしたら59までサポート
+vector<vector<long long>> com; // 前計算の結果を保存
 // 動的計画法で前処理
-void init() {
+void init()
+{
     com.assign(MAX_N, vector<long long>(MAX_N));
     com[0][0] = 1;
-    for (int i = 1; i < MAX_N; ++i) {
+    for (int i = 1; i < MAX_N; ++i)
+    {
         com[i][0] = 1;
-        for (int j = 1; j < MAX_N; j++) {
+        for (int j = 1; j < MAX_N; j++)
+        {
             com[i][j] = (com[i - 1][j - 1] + com[i - 1][j]);
         }
     }
 }
 // nCk を取得
-long long nCk(int n, int k) {
+long long nCk(int n, int k)
+{
     assert(!(n < k));
     assert(!(n < 0 || k < 0));
     return com[n][k];
