@@ -48,6 +48,7 @@ Point rot90(const Point &p) { return Point(-p.y, p.x); }
 
 // 外積
 // 外積は正確には3次元以上で定義されるが、z座標が0とみなす。結果はx座標、y座標が0でz座標の値がこの関数の結果となる
+// ネジの方向は角度が小さい方向で測る
 // 絶対値はベクトルで作る平行四辺形の面積
 // 0なら平行
 DD cross(const Point &p, const Point &q) { return p.x * q.y - p.y * q.x; }
@@ -83,7 +84,7 @@ struct Line : vector<Point>
     friend ostream &operator<<(ostream &s, const Line &l) { return s << '{' << l[0] << ", " << l[1] << '}'; }
 };
 
-// 1：a-bから見てcは左側(反時計回り)、-1：a-bから見てcは右側(時計回り)、0：一直線上
+// 1：b-aから見てc-aは左側(反時計回り)、-1：b-aから見てc-aは右側(時計回り)、0：一直線上
 int simple_ccw(const Point &a, const Point &b, const Point &c)
 {
     if (cross(b - a, c - a) > EPS)
