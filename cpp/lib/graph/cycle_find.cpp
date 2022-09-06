@@ -25,12 +25,9 @@ using Graph = vector<vector<int>>;
 // clang-format on
 
 // 0: not visited
-// 1: visited (calculateing)
-// 2: visited (calculated)
-// ^ はhttps://qiita.com/drken/items/a803d4fc4a727e02f7ba#4-6-%E3%82%B5%E3%82%A4%E3%82%AF%E3%83%AB%E6%A4%9C%E5%87%BA
-// のfinished[v] := 帰りがけ順の意味で v が訪問済みであることを表す
-// と同義
-// 1に訪れた場合、それはcircleに含まれることを意味する
+// 1: visited (行きがけ)
+// 2: visited (帰りがけ)
+// 1に訪れた場合、その点はcircleに含まれることを意味する
 vector<int> state;
 
 // 弱連結成分(任意の頂点に対してs->tもしくはt->sどちらかにはパスがある)に1つ以下のサイクルがあるという条件下で、サイクル頂点をcycleにつめる
@@ -38,7 +35,7 @@ vector<int> state;
 // dfsが終わったときにはvが辿れる頂点は全てstate=2になっていることに注意
 
 // 有向グラフを想定している。無向グラフに対応するには辿り元に戻らないように注意
-// けんちょん記事の場合はグラフ全体で1つ以下のサイクルがあることを条件にしているので、同様の条件だと強連結成分分解をする必要があるので面倒
+// 具体的には par=-1 を引数に追加してあげる
 int dfs(const Graph &G, int v, vector<int> &cycle)
 {
     if (state[v] == 1)
