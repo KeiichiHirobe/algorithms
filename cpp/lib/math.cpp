@@ -320,6 +320,14 @@ struct Eratosthenes
 // f(n)=∑n|i μ(i/n)F(i)
 // となることが知られる
 
+// メビウス変換もゼータ変換も O(NlogN) ならもっとシンプルに解ける。
+// f(3)=F(3)−f(6)−f(9)-f(12)-f(15)
+// となるので、fの大きな方からloopを回してあげればいいだけ
+// https://atcoder.jp/contests/abc206/submissions/23627355
+
+// 畳み込み例
+// https://atcoder.jp/contests/agc038/submissions/7659496
+
 // 高速ゼータ変換
 // 入力 f が in-place に更新されて、F になる
 template <class T>
@@ -403,6 +411,64 @@ pair<long long, long long> ChineseRem(const vector<long long> &b, const vector<l
     }
     return make_pair(normalize_mod(r, M), M);
 }
+
+// https://atcoder.jp/contests/atc001/tasks/fft_c
+// https://qiita.com/ageprocpp/items/0d63d4ed80de4a35fe79
+class FastFourierTransform
+{
+private:
+    static void dft(vector<complex<double>> &func, int inverse)
+    {
+        int sz = func.size();
+        if (sz == 1)
+            return;
+        vector<complex<double>> veca, vecb;
+        rep(i, 0, sz / 2)
+        {
+            veca.push_back(func[2 * i]);
+            vecb.push_back(func[2 * i + 1]);
+        }
+        dft(veca, inverse);
+        dft(vecb, inverse);
+        complex<double> now = 1.0;
+        // 1のsz乗根は、zeta^0, zeta^1, zeta^2, zeta^3, ... zeta^(sz-1)
+        complex<double> zeta = polar(1.0, inverse * 2.0 * acos(-1) / sz);
+        rep(i, 0, sz)
+        {
+            func[i] = veca[i % (sz / 2)] + now * vecb[i % (sz / 2)];
+            now *= zeta;
+        }
+    }
+
+public:
+    // f = a0 + a1 * x + a2 * x^2
+    // g = b0 + b1 * x + b2 + x^2 + b3 * x^3
+    // -> 
+    // f * g = c0  + c1 * x + c2 * x^2 + ... + c7 * x^7
+    // (fのサイズ + gのサイズ)以上の2冪のサイズ
+    template <typename T>
+    static vector<double> multiply(vector<T> f, vector<T> g)
+    {
+        vector<complex<double>> nf, ng;
+        int sz = 1;
+        while (sz < int(f.size() + g.size()))
+            sz *= 2;
+        nf.resize(sz);
+        ng.resize(sz);
+        rep(i, 0, f.size())
+        {
+            nf[i] = f[i];
+            ng[i] = g[i];
+        }
+        dft(nf, 1);
+        dft(ng, 1);
+        rep(i, 0, sz) nf[i] *= ng[i];
+        dft(nf, -1);
+        vector<double> res;
+        rep(i, 0, sz) res.push_back(nf[i].real() / sz);
+        return res;
+    }
+};
 
 // 乱数でshuffle
 random_device rnd; // 非決定的な乱数生成器
