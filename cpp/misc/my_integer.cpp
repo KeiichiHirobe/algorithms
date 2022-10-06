@@ -112,4 +112,12 @@ int main()
     (a = Integer(10)) = Integer(15);
     // 15
     std::cout << *a.ptr << std::endl;
+    const Integer aa(100);
+    // constが付与されているので、コピーコンストラクタが使われる
+    Integer bb(std::move(aa));
+
+    // 以下の2行ともcopy/move construtor/assignment されるわけではない
+    Integer& x = bb;
+    Integer& y = x;
+    std::cout << *y.ptr << std::endl;
 }
