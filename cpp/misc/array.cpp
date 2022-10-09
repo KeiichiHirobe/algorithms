@@ -3,6 +3,12 @@
 template <typename Array>
 struct array_iterator
 {
+    using difference_type = std::ptrdiff_t;
+    using value_type = typename Array::value_type;
+    using reference = typename Array::reference;
+    using pointer = typename Array::pointer_type;
+    using iterator_category = std::random_access_iterator_tag;
+
     Array &a;
     size_t i;
 
@@ -61,6 +67,22 @@ struct array_iterator
     {
         return i != right.i;
     }
+    bool operator<(array_iterator const &right)
+    {
+        return i < right.i;
+    }
+    bool operator>(array_iterator const &right)
+    {
+        return i > right.i;
+    }
+    bool operator<=(array_iterator const &right)
+    {
+        return i <= right.i;
+    }
+    bool operator>=(array_iterator const &right)
+    {
+        return i >= right.i;
+    }
 
     typename Array::reference operator*()
     {
@@ -80,6 +102,12 @@ struct array_iterator
 template <typename Array>
 struct array_const_iterator
 {
+    using difference_type = std::ptrdiff_t;
+    using value_type = typename Array::value_type;
+    using reference = typename Array::reference;
+    using pointer = typename Array::pointer_type;
+    using iterator_category = std::random_access_iterator_tag;
+
     Array const &a;
     size_t i;
 
@@ -139,6 +167,23 @@ struct array_const_iterator
     {
         return i != right.i;
     }
+    bool operator<(array_const_iterator const &right)
+    {
+        return i < right.i;
+    }
+    bool operator>(array_const_iterator const &right)
+    {
+        return i > right.i;
+    }
+    bool operator<=(array_const_iterator const &right)
+    {
+        return i <= right.i;
+    }
+    bool operator>=(array_const_iterator const &right)
+    {
+        return i >= right.i;
+    }
+
 
     typename Array::const_reference operator*()
     {
@@ -155,6 +200,8 @@ struct array
 {
     T storage[N];
 
+    using value_type = T;
+    using pointer_type = T *;
     using reference = T &;
     using const_reference = T const &;
     using iterator = array_iterator<array>;
@@ -203,15 +250,9 @@ struct array
 
 int main()
 {
-    /*
-    array<int, 5> a = {1, 2, 3, 4, 5};
-    std::for_each(std::begin(a), std::end(a), [](auto x)
-                  { std::cout << x; });
-
     const array<int, 5> b = {1, 2, 3, 4, 5};
     std::for_each(b.begin(), b.end(), [](auto x)
                   { std::cout << x; });
-    */
 
     array<int, 5> c = {1, 2, 3, 4, 5};
     array<int, 5>::iterator iter = c.begin();
