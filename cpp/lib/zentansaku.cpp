@@ -43,10 +43,6 @@ void solve()
     };
     dfs(dfs, {}, 0, 3);
 }
-int main()
-{
-    solve();
-}
 /*
 3,0,0
 2,1,0
@@ -84,12 +80,17 @@ void solve2()
             cout << cur;
             return;
         }
-        for (int i = rest; rest >= 0; --rest)
+        for (int i = rest; i >= 0; --i)
         {
             cur.push_back(A[idx] + i);
-            f(f, cur, idx, rest - i);
+            f(f, cur, idx+1, rest - i);
             cur.pop_back();
         }
     };
     dfs(dfs, {}, 0, 3);
+}
+
+int main()
+{
+    solve2();
 }

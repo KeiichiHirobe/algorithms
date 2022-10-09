@@ -1,5 +1,4 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h>
 
 template <typename Array>
 struct array_iterator
@@ -63,7 +62,7 @@ struct array_iterator
         return i != right.i;
     }
 
-    typename Array::reference &operator*()
+    typename Array::reference operator*()
     {
         return a[i];
     }
@@ -141,7 +140,7 @@ struct array_const_iterator
         return i != right.i;
     }
 
-    typename Array::const_reference &operator*()
+    typename Array::const_reference operator*()
     {
         return a[i];
     }
@@ -204,13 +203,15 @@ struct array
 
 int main()
 {
+    /*
     array<int, 5> a = {1, 2, 3, 4, 5};
     std::for_each(std::begin(a), std::end(a), [](auto x)
                   { std::cout << x; });
 
     const array<int, 5> b = {1, 2, 3, 4, 5};
-    std::for_each(std::begin(b), std::end(b), [](auto x)
+    std::for_each(b.begin(), b.end(), [](auto x)
                   { std::cout << x; });
+    */
 
     array<int, 5> c = {1, 2, 3, 4, 5};
     array<int, 5>::iterator iter = c.begin();
