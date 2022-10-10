@@ -46,13 +46,13 @@ struct array_iterator
         i -= n;
         return *this;
     }
-    array_iterator &operator+(std::size_t n) const
+    array_iterator operator+(std::size_t n) const
     {
         auto copy = *this;
         copy += n;
         return copy;
     }
-    array_iterator &operator-(std::size_t n) const
+    array_iterator operator-(std::size_t n) const
     {
         auto copy = *this;
         copy -= n;
@@ -84,11 +84,11 @@ struct array_iterator
         return i >= right.i;
     }
 
-    typename Array::reference operator*()
+    typename Array::reference operator*() const
     {
         return a[i];
     }
-    typename Array::reference operator[](size_t n)
+    typename Array::reference operator[](size_t n) const
     {
         return *(*this + n);
     }
@@ -104,7 +104,8 @@ struct array_const_iterator
 {
     using difference_type = std::ptrdiff_t;
     using value_type = typename Array::value_type;
-    using reference = typename Array::reference;
+    /// const_referenceを返す必要があることに注意
+    using reference = typename Array::const_reference;
     using pointer = typename Array::pointer_type;
     using iterator_category = std::random_access_iterator_tag;
 
@@ -146,13 +147,13 @@ struct array_const_iterator
         i -= n;
         return *this;
     }
-    array_const_iterator &operator+(std::size_t n) const
+    array_const_iterator operator+(std::size_t n) const
     {
         auto copy = *this;
         copy += n;
         return copy;
     }
-    array_const_iterator &operator-(std::size_t n) const
+    array_const_iterator operator-(std::size_t n) const
     {
         auto copy = *this;
         copy -= n;
@@ -184,8 +185,7 @@ struct array_const_iterator
         return i >= right.i;
     }
 
-
-    typename Array::const_reference operator*()
+    typename Array::const_reference operator*() const
     {
         return a[i];
     }
@@ -253,6 +253,10 @@ int main()
     const array<int, 5> b = {1, 2, 3, 4, 5};
     std::for_each(b.begin(), b.end(), [](auto x)
                   { std::cout << x; });
+
+    std::reverse_iterator rfirst(b.end());
+    rfirst++;
+    std::cout << *rfirst << std::endl;
 
     array<int, 5> c = {1, 2, 3, 4, 5};
     array<int, 5>::iterator iter = c.begin();
