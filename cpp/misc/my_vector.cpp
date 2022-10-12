@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <array>
 
 template <typename T, typename Allocator = std::allocator<T>>
@@ -176,6 +177,7 @@ public:
              iter != iter_end;
              ++iter, ++raw_ptr)
         {
+            // move(*iter) の方が良さそう
             construct(raw_ptr, *iter);
         }
         clear();
@@ -371,26 +373,20 @@ int main()
 {
     vector<int> v(10);
     std::cout << "=============" << std::endl;
-    /*
     for (auto i = 0; i != 10; ++i)
     {
         v[i] = i;
     }
-    */
-    // v.resize(13);
+    v.resize(13);
     std::cout << v.front() << std::endl;
 
-    /*
     std::for_each(v.begin(), v.end(),
                   [](auto x)
                   { std::cout << x; });
 
     vector<int> w = {1, 2, 3, 4, 5};
 
-    std::array<int, 5> a{1, 2, 3, 4, 5};
-
     std::for_each(w.begin(), w.end(),
                   [](auto x)
                   { std::cout << x; });
-    */
 }

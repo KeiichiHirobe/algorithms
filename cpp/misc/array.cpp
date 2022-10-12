@@ -84,11 +84,11 @@ struct array_iterator
         return i >= right.i;
     }
 
-    typename Array::reference operator*() const
+    reference operator*() const
     {
         return a[i];
     }
-    typename Array::reference operator[](size_t n) const
+    reference operator[](size_t n) const
     {
         return *(*this + n);
     }
@@ -185,11 +185,11 @@ struct array_const_iterator
         return i >= right.i;
     }
 
-    typename Array::const_reference operator*() const
+    reference operator*() const
     {
         return a[i];
     }
-    typename Array::const_reference operator[](size_t n)
+    reference operator[](size_t n)
     {
         return *(*this + n);
     }
