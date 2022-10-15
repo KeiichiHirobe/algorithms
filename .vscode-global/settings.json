@@ -5,7 +5,10 @@
     "editor.tabSize": 4,
     "editor.minimap.enabled": false,
     "editor.acceptSuggestionOnCommitCharacter": false,
+    // semicolon時にformat
+    "editor.formatOnType": true,
     "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
     // alwaysでもいいかもしれない
     "editor.autoClosingOvertype": "auto",
     "files.autoSave": "afterDelay",
@@ -67,7 +70,7 @@
                 "cwd": "${fileDirname}",
                 "environment": [],
                 "externalConsole": true,
-                "MIMode": "lldb",
+                "MIMode": "lldb"
             }
 		]
 	},

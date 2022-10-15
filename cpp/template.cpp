@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+
 #include <atcoder/all>
 // clang-format off
 #define rep(i, s ,n) for(int i=s, i##_len=(n); i<i##_len; ++i)
@@ -20,25 +21,21 @@ template <typename T> ostream &operator<<(ostream &s, vector<T> const &v) { for 
 // 幅優先の例
 // 入力: グラフ G と，探索の始点 s
 // 出力: s から各頂点への最短路長を表す配列
-vector<int> BFS(const Graph &G, int s)
-{
-    int N = (int)G.size(); // 頂点数
+vector<int> BFS(const Graph &G, int s) {
+    int N = (int)G.size();  // 頂点数
     // vector<bool> seen(N, false);
-    vector<int> dist(N, -1); // 全頂点を「未訪問」に初期化
+    vector<int> dist(N, -1);  // 全頂点を「未訪問」に初期化
     queue<int> que;
 
     dist[s] = 0;
     que.push(s);
 
-    while (!que.empty())
-    {
+    while (!que.empty()) {
         int v = que.front();
         que.pop();
 
-        for (int x : G[v])
-        {
-            if (dist[x] != -1)
-                continue;
+        for (int x : G[v]) {
+            if (dist[x] != -1) continue;
 
             dist[x] = dist[v] + 1;
             que.push(x);
@@ -47,23 +44,20 @@ vector<int> BFS(const Graph &G, int s)
     return dist;
 }
 
-int main()
-{
+int main() {
     cout << fixed << setprecision(16);
-    int n,s,t;
+    int n, s, t;
     cin >> n >> s >> t;
     vector<bool> seen(n, false);
     Graph G(n);
-    auto dfs = [&seen, &G](auto &&f, int v) -> void
-    {
+    auto dfs = [&](auto &&f, int v) -> void {
         seen[v] = true;
-        for (auto next_v : G[v])
-        {
-            if (seen[next_v])
-                continue;
+        for (auto next_v : G[v]) {
+            if (seen[next_v]) continue;
             f(f, next_v);
         }
     };
+
     dfs(dfs, s);
     if (seen[t]) {
         cout << "Yes" << endl;
