@@ -3,6 +3,9 @@
     // https://blog.knshnb.com/posts/vscode-setup-competitive/
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
+    // spaceとindentについての^の二つの設定について、既存ファイルについては上記設定を無視するのがデフォルトの挙動でその場合、trueとする
+    // gccのコード読むのが辛いのでfalseとしている
+    "editor.detectIndentation": false,
     "editor.minimap.enabled": false,
     "editor.acceptSuggestionOnCommitCharacter": false,
     // semicolon時にformat
