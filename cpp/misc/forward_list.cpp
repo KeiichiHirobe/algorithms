@@ -1,5 +1,22 @@
 #include <bits/stdc++.h>
 
+/*
+このクラスはstd::forward_list を自力で書いたもの
+destructorや代入など実装していないものが多い
+gccの実装を大体読んで書き換えたものが forward_list_gcc.cpp
+そちらを読むこと
+
+反省としては、
+
+* Tのallocatorをnode<T> のallocatorに変換する方法(rebind_alloc)を知らなかったために、*Tをnodeに持たせてしまった
+* before_begin/end のために2つ番兵ノードを作ってしまったが、endはnullptrで良かった
+* nodeの要素を持たないクラスをsuper class(node_base)として定義した方が良い。番兵ノードのTのconstructorが呼ばれてしまうこともない
+* propagate_on_container_copy_assignment/propagate_on_container_move_assignment/propagate_on_container_swap_assignment　の取り扱いは全くできていないと思われる
+
+*/
+
+#include "person.cpp"
+
 template <typename T, typename Allocator = std::allocator<T>>
 struct node {
     using allocator_type = Allocator;
@@ -67,7 +84,6 @@ struct list_iterator {
     }
 };
 
-
 template <typename T>
 struct const_list_iterator {
     using difference_type = std::ptrdiff_t;
@@ -130,20 +146,19 @@ public:
     }
 
     template <typename InputeIterator>
-    forward_list(InputeIterator first, InputeIterator last, const allocator_type & alloc = allocator_type()):forward_list(alloc) {
+    forward_list(InputeIterator first, InputeIterator last, const allocator_type &alloc = allocator_type())
+        : forward_list(alloc) {
         for (InputeIterator itr = first; itr != last; ++itr) {
             push_front(*itr);
         }
     }
 
-    forward_list(std::initializer_list<value_type> init, const allocator_type & alloc = allocator_type()):forward_list(alloc, std::begin(init), std::end(init)){
+    forward_list(std::initializer_list<value_type> init, const allocator_type &alloc = allocator_type())
+        : forward_list(alloc, std::begin(init), std::end(init)) {
     }
 
     forward_list(const forward_list &x) {
-
     }
-
-
 
     ~forward_list() {
         while (not empty()) {
@@ -248,86 +263,34 @@ private:
     allocator_type alloc;
 };
 
-struct person {
-    int *ptr;
-    person(int id = 0) : ptr(new int(id)) {
-    }
-    person(const person &p) : ptr(new int(*p.ptr)) {
-    }
-    person(person &&p) : ptr(p.ptr) {
-        if (ptr == nullptr) {
-            std::cout << "get ownership for person (nullptr)" << std::endl;
-        } else {
-            std::cout << "get ownership for person (" << *ptr << ")" << std::endl;
-        }
-        p.ptr = nullptr;
-    }
-    ~person() {
-        if (ptr == nullptr) {
-            std::cout << "destructor person (nullptr)" << std::endl;
-        } else {
-            std::cout << "destructor person (" << *ptr << ")" << std::endl;
-        }
-        delete ptr;
-    }
-    person &operator=(const person &p) {
-        if (this != &p) {
-            *ptr = *p.ptr;
-        }
-        return *this;
-    }
-    person &operator=(person &&p) {
-        delete ptr;
-        ptr = p.ptr;
-        p.ptr = nullptr;
-        return *this;
-    }
-    friend bool operator==(const person &a, const person &b) {
-        return *a.ptr == *b.ptr;
-    }
-    friend bool operator<(const person &a, const person &b) {
-        return *a.ptr < *b.ptr;
-    }
-    friend bool operator<=(const person &a, const person &b) {
-        return *a.ptr <= *b.ptr;
-    }
-    friend bool operator>(const person &a, const person &b) {
-        return *a.ptr > *b.ptr;
-    }
-    friend bool operator>=(const person &a, const person &b) {
-        return *a.ptr >= *b.ptr;
-    }
-    friend std::ostream &operator<<(std::ostream &s, const person &v) {
-        std::cout << *v.ptr << std::endl;
-        return s;
-    }
-};
-
 int main() {
     {
-    forward_list<person> ls;
+        forward_list<person> ls;
 
-    ls.push_front(person{3});
-    ls.insert_after(ls.begin(), {1});
-    person p1{0};
-    ls.insert_after(ls.before_begin(), p1);
-    ls.emplace_after(ls.before_begin(), 2);
+        ls.push_front(person{3});
+        std::cout << "------" << std::endl;
+        ls.insert_after(ls.begin(), {1});
+        person p1{0};
+        ls.insert_after(ls.before_begin(), p1);
+        ls.emplace_after(ls.before_begin(), 2);
 
-    std::for_each(ls.cbegin(), ls.cend(), [](const person &x) { std::cout << x; });
-    std::cout << "-------------" << std::endl;
-    // before_beginとendは異なることが保証されている
-    for (auto itr = ls.before_begin();;) {
-        auto ni = std::next(itr);
-        if (ni == ls.end())
-            break;
-        if (*ni == person{3}) {
-            itr = ls.erase_after(itr);
-        } else {
-            ++itr;
+        std::for_each(ls.cbegin(), ls.cend(), [](const person &x) { std::cout << x; });
+        std::cout << "-------------" << std::endl;
+        // before_beginとendは異なることが保証されている
+
+        for (auto itr = ls.before_begin();;) {
+            auto ni = std::next(itr);
+            if (ni == ls.end())
+                break;
+            if (*ni == person{3}) {
+                itr = ls.erase_after(itr);
+            } else {
+                ++itr;
+            }
         }
+        std::for_each(ls.cbegin(), ls.cend(), [](const person &x) { std::cout << x; });
     }
-    std::for_each(ls.cbegin(), ls.cend(), [](const person &x) { std::cout << x; });
-    }
+
     /*
             std::cout << "-------------" << std::endl;
             forward_list<person> ls;
