@@ -115,6 +115,13 @@ long long modinv(long long a, long long mod)
 // aの逆元がp%aの逆元で表現できることを利用している
 // https://drken1215.hatenablog.com/entry/2018/06/08/210000
 
+// ^はテクニカルで難しいが、実は、階乗の逆元の列である、1!^-1, 2!^-1, ..N!^-1 は簡単に求められる。
+// N!,N!^-1をまず求める
+// (N-1)!^-1 = N!^-1 * N
+// (N-2)!^-1 = (N-1)!^-1 * (N-1) 
+// ..
+// ref: https://www.youtube.com/watch?v=8uowVvQ_-Mo&t=6002s
+
 // nCrの性質
 // https://manabitimes.jp/math/588
 
@@ -198,8 +205,10 @@ long long nCk(int n, int k)
 // エラトステネスの篩を使って、1,2,,Nの素因数分解をNlogNにする
 // 愚直にやるとN*N^{1/2}
 
-// 約数列挙は計算量はnの約数の個数をσ(n)として、O(σ(n))となります。n≤10^9の範囲ではσ(n)≤1344(n=735134400で最大) であることが知られていますので、十分高速です。
+// 約数列挙は計算量はnの約数の個数をσ(n)として、O(σ(n))となります。n≤10^9の範囲ではσ(n)≤1344(n=735134400で最大)
+// であることが知られていますので、十分高速です。
 // https://qiita.com/drken/items/3beb679e54266f20ab63#4-1-%E9%AB%98%E9%80%9F%E7%B4%A0%E5%9B%A0%E6%95%B0%E5%88%86%E8%A7%A3
+// 約数列挙だけであればO(NlogN)の簡単な方法がある https://atcoder.jp/contests/abc254/editorial/4065 の9-11行目
 
 // エラトステネスの篩
 struct Eratosthenes
