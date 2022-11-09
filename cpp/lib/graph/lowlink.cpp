@@ -18,6 +18,7 @@ template <typename T> ostream &operator<<(ostream &s, vector<T> const &v) { for 
 // clang-format on
 
 // https://algo-logic.info/articulation-points/
+// https://www.youtube.com/watch?v=aZXi1unBdJA
 
 using Graph = vector<vector<int>>;
 using P = pair<long, long>;
@@ -36,15 +37,15 @@ struct LowLink {
     vector<int> ord, low;
     vector<int> aps;  // articulation points
     vector<P> bridges;
+    int k = 0; // for increment
 
     LowLink(const Graph &G_) : G(G_) {
         seen.assign(G.size(), false);
         ord.assign(G.size(), 0);
         low.assign(G.size(), 0);
-        int k = 0;
         for (int i = 0; i < (int)G.size(); i++) {
             if (!seen[i])
-                k = dfs(i, k, -1);
+                dfs(i,-1);
         }
         sort(aps.begin(), aps.end());          // 必要ならソートする
         sort(bridges.begin(), bridges.end());  // 必要ならソートする
@@ -53,8 +54,9 @@ struct LowLink {
     // サイクルを発見したらそれより先に進まない
     // ord:先かけ順
     // lowlink:後退辺(DFS木において利用しなかった辺)を最大1度のみ辿ることができる時にその頂点から辿ることができる最小のord
-    // ∞のようにサイクルが2つ繋がっている場合、2つのサイクルは異なるlowlinkを持つことに注意すること！
-    int dfs(int v, int k, int par) {
+    // ∞のようにサイクルが2つ繋がっている場合、2つのサイクルは異なるlowlinkを持つ場合があることに注意すること！具体的には部分木のルートが∞の中心である時に限り等しくなる
+    // [不正確情報] サイクルの個数について。辺を共有するサイクルを1つとカウントするのであれば、ord[v] = low[x] の回数がサイクルの個数になりそう
+    void dfs(int v, int par) {
         seen[v] = true;
         ord[v] = k++;
         low[v] = ord[v];
@@ -66,7 +68,7 @@ struct LowLink {
                 continue;
             if (!seen[x]) {
                 count++;
-                k = dfs(x, k, v);
+                dfs(x, v);
                 low[v] = min(low[v], low[x]);
                 // v->xに辿ると、xからvもしくはvの祖先にたどり着けないことを意味する
                 if (ord[v] < low[x])
@@ -85,7 +87,6 @@ struct LowLink {
             is_aps = true;
         if (is_aps)
             aps.push_back(v);
-        return k;
     }
 };
 
