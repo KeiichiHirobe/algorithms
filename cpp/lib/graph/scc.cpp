@@ -57,9 +57,10 @@ void dfs2(const Graph &G, int v, vector<int> &cycle)
 // 辿れたところまでが強連結
 
 // 理解のポイントとしては、帰りがけ順でs>tならば
-// 1 sからtへ辿れる(一般にs>tとは限らない)
-// 2 sからtへ辿れず、tからsへも辿れない
-// の2patternある。逆辺のグラフで辿れたということは2のパターンはありえず、辿り始めた頂点と辿った各々の頂点はお互いに行き来できることがわかる
+// 1 s->t ok  t->s ok
+// 2 s->t ok  t->s ng 
+// 3 s->t ng  t->s ng
+// のpatternある。逆辺のグラフで辿れたということは1のパターン
 int main()
 {
     cout << fixed << setprecision(16);

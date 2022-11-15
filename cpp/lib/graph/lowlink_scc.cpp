@@ -30,7 +30,7 @@ struct LowLink {
     vector<bool> seen;
     vector<bool> inStack;
     vector<int> ord, low;
-    vector<vector<int>> scc;  // 強連結成分分解された頂点集合
+    vector<vector<int>> scc;  // 強連結成分分解された頂点集合。各要素を潰すとトポロジカルソートされている
     stack<int> st;
     int k = 0;  // for increment
 
@@ -44,13 +44,7 @@ struct LowLink {
                 dfs(i);
             assert(st.size() == 0);
         }
-        map<int, vector<int>> m;
-        rep(i, 0, G.size()) {
-            m[low[i]].push_back(i);
-        }
-        for (auto [key, value] : m) {
-            scc.push_back(value);
-        }
+        reverse(scc.begin(),scc.end());
     }
 
     // ∞のようにサイクルが2つ繋がっている場合でも2つのサイクルは必ず同じlowlinkを持つ
@@ -69,20 +63,21 @@ struct LowLink {
             }
             low[v] = min(low[v], low[x]);
         }
-        st.pop();
-        inStack[v] = false;
-        /* youtubeの動画ではこのようにしていた。stackから取り出すのをサイクルの根元に戻るまで遅延させることで辿りながらsccに分解している
+        // st.pop();
+        // inStack[v] = false;
+        // stackから取り出すのをサイクルの根元に戻るまで遅延させることで辿りながらsccに分解している
         if (ord[v] == low[v]) {
+            vector<int> sc;
             while (true) {
                 int x = st.top();
                 st.pop();
                 inStack[x] = false;
+                sc.push_back(x);
                 if (x == v)
                     break;
             }
-            ++sccCnt;
+            scc.push_back(sc);
         }
-        */
         return;
     }
 };
@@ -127,11 +122,11 @@ int main() {
 */
 
 /*
-1,
-2,3,
-4,
-5,6,7,
-8,9,10,
-11,
 12,
+11,
+9,10,8,
+6,7,5,
+4,
+3,2,
+1,
 */
