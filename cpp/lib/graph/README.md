@@ -53,9 +53,10 @@
   - union_find で、unite 前に既に同値であればサイクル
 - 有向グラフ
   - BFS の topological sort が途中で終わってしまったらサイクル
-  - topological_sort_bfs.cpp
-  - DFS の topological sort はサイクルがないこと(DAG)を前提としているため、検出できない
-  - https://algo-logic.info/topological-sort/
+    - topological_sort_bfs.cpp
+    - DFS の topological sort はサイクルがないこと(DAG)を前提としているため、検出できない
+    - https://algo-logic.info/topological-sort/
+  - DFSで先がけしているが帰りがけしていない頂点にたどれる時
 
 ### サイクルの列挙が必要な場合
 サイクルの列挙の仕方による
@@ -68,7 +69,7 @@
 
 - 有向グラフ
   - 点や辺を共有するサイクルは1つとしてカウントし、∞は1つのサイクルとみなすのであれば、sccで同じ連結成分をサイクルとして列挙できる
-  - lowlink_scc.cpp
+  - sccの章を参照
 
 - 無向グラフの場合は連結成分、有向グラフの場合は弱連結成分(任意の頂点に対して向きを無視するとどちらかにはパスがある)に 1 つ以下のサイクルがあるというゆるい条件であれば楽に実装できる
   - 帰りがけ順で訪れる前に行きがけ順で再度訪れたことからサイクルを検出して、辿り戻していく
@@ -78,7 +79,11 @@
 ## 強連結成分分解
 
 - scc.cpp
-- 任意の頂点 s,t について、s->t,t->s で辿れる頂点集合を作る
+    - DFSで辿った後、逆辺を辿る
+- lowlink_scc.cpp
+    - lowlinkで実装する
+    - atcoder libと同じ方針
+
 
 ## 木の性質
 

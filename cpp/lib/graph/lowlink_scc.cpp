@@ -17,9 +17,8 @@ template <typename T> ostream &operator<<(ostream &s, vector<vector<T>> const &v
 template <typename T> ostream &operator<<(ostream &s, vector<T> const &v) { for (int i = 0; i < int(v.size()); ++i) { s << v[i]; if (i != int(v.size()) - 1) { s << ",";}} s << endl; return s;}
 // clang-format on
 
-// 有向グラフにlowlinkをつけ、sccする。同じlowlinkは同じ連結成分としている
-// 注意点として、一般的にはlowlinkは無向グラフで使われ、後退辺(DFS木において利用しなかった辺)を最大1度のみ辿ることでラベル付けするが、ここでは任意回数辿ることを想定している
-// そういう意味では、シンプルに、その頂点から辿ることができる最小の頂点番号 を意味する
+// 有向グラフにlowlinkをつけ、sccする。
+// lowlinkは無向グラフと同じ
 // https://www.youtube.com/watch?v=wUgWX0nc4NY
 using Graph = vector<vector<int>>;
 using P = pair<long, long>;
@@ -29,6 +28,7 @@ struct LowLink {
     const Graph &G;
     vector<bool> seen;
     vector<bool> inStack;
+    // lowlinkが違うものでも同じ成分にあることもあるので注意
     vector<int> ord, low;
     vector<vector<int>> scc;  // 強連結成分分解された頂点集合。各要素を潰すとトポロジカルソートされている
     stack<int> st;
@@ -47,7 +47,6 @@ struct LowLink {
         reverse(scc.begin(),scc.end());
     }
 
-    // ∞のようにサイクルが2つ繋がっている場合でも2つのサイクルは必ず同じlowlinkを持つ
     void dfs(int v) {
         seen[v] = true;
         ord[v] = k++;
@@ -60,8 +59,13 @@ struct LowLink {
             }
             if (!seen[x]) {
                 dfs(x);
+                low[v] = min(low[v], low[x]);
+            } else {
+                // youtube実装では以下だが実はロジックに影響ない 
+                // 以下だとシンプルにその頂点から辿れる最小の頂点番号になる
+                // low[v] = min(low[v], low[x]);
+                low[v] = min(low[v], ord[x]);
             }
-            low[v] = min(low[v], low[x]);
         }
         // st.pop();
         // inStack[v] = false;
@@ -89,14 +93,14 @@ int main() {
     rep(i, 0, m) {
         int a, b;
         cin >> a >> b;
-        --a;
-        --b;
         G[a].push_back(b);
     }
     LowLink lowlink(G);
+    cout << lowlink.scc.size() << endl;
     for (auto x : lowlink.scc) {
+        cout << x.size();
         for (auto el : x) {
-            cout << el + 1 << ",";
+            cout << " " << el;
         }
         cout << endl;
     }
