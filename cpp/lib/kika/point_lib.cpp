@@ -187,35 +187,35 @@ Point gaisin(Point a, Point b, Point c) {
     return crosspoint(ab, bc)[0];
 }
 
-// https://drken1215.hatenablog.com/entry/2020/01/12/224200
-int main() {
-    int N;
-    cin >> N;
-    vector<Point> v(N);
-    for (int i = 0; i < N; ++i)
-        cin >> v[i].x >> v[i].y;
-
-    // 候補
-    vector<Point> alt;
-    for (int i = 0; i < N; ++i) {
-        for (int j = i + 1; j < N; ++j) {
-            alt.push_back((v[i] + v[j]) / 2);
-
-            for (int k = j + 1; k < N; ++k) {
-                if (simple_ccw(v[i], v[j], v[k]) == 0)
-                    continue;
-                auto r = gaisin(v[i], v[j], v[k]);
-                alt.push_back(r);
-            }
+// 凸包
+// p.234
+// 直線上に点が並んでいる場合も考慮している
+vector<Point> convex_hull(const vector<Point> &ps) {
+    int n = ps.size();
+    sort(ps.begin(), ps.end(), [](const Point &a, const Point &b) -> bool {
+        if (a.x != b.x) {
+            return a.x < b.x;
         }
-    }
+        return a.y < b.y;
+    });
 
-    DD res = INF;
-    for (auto r : alt) {
-        DD tmp = 0;
-        for (auto p : v)
-            chmax(tmp, abs(p - r));
-        chmin(res, tmp);
+    int k = 0;
+    // 構築中の凸包
+    vector<Point> qs(n * 2);
+    // 下側
+    rep(i, 0, n) {
+        while (k > 1 && cross((qs[k - 1] - qs[k - 2]), (ps[i] - qs[k - 1])) >= -EPS)
+            k--;
+        qs[k++] = ps[i];
     }
-    cout << fixed << setprecision(10) << res << endl;
+    // 上側
+    for (int i = n - 2, t = k; i >= 0; --i) {
+        while (k > t && cross((qs[k - 1] - qs[k - 2]), (ps[i] - qs[k - 1])) >= -EPS)
+            k--;
+        qs[k++] = ps[i];
+    }
+    // 最初と最後が重複しているので除く
+    // 上側のloopをi>0としてしまうと、直線上にあったときに１つ余分に含まれてしまうと思われる
+    qs.resize(k - 1);
+    return qs;
 }
