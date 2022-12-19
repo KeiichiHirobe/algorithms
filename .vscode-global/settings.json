@@ -36,7 +36,7 @@
         // 自分で実行したいコマンドを設定する
         // $dir, $fileNameはそれぞれ編集中のファイルのディレクトリ、ファイル名を表す
         // macの場合デフォルトだとg++はclang++に対するエイリアスになっているので以下を設定済みであることを想定
-        // alias g++='/usr/local/bin/g++-12'
+        // alias g++='/usr/local/bin/g++'
         // -include file はファイルの先頭に #include file したように振る舞う
         "cpp": "cd $dir && g++ -std=c++17 -I  $workspaceRoot/cpp/ac-library -O0 -g -Wshadow=local -Wall  -Wextra -D_GLIBCXX_DEBUG -fsanitize=undefined,address $fileName && ./a.out",
     },
@@ -52,7 +52,7 @@
         "${workspaceFolder}/**",
         "/usr/local/opt/binutils/include"
     ],
-    "C_Cpp.default.compilerPath": "/usr/local/bin/g++-12",
+    "C_Cpp.default.compilerPath": "/usr/local/bin/g++",
     "C_Cpp.default.intelliSenseMode": "macos-gcc-x64",
     // debuggerの設定
     // g++ -g する必要があることに注意
