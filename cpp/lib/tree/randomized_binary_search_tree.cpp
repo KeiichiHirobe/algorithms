@@ -1,10 +1,10 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <map>
 #include <algorithm>
-#include <queue>
+#include <cmath>
 #include <iomanip>
+#include <iostream>
+#include <map>
+#include <queue>
+#include <vector>
 // clang-format off
 #define rep(i, s ,n) for(int i=s, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
@@ -24,14 +24,12 @@ using Graph = vector<vector<int>>;
 
 // https://qiita.com/drken/items/1b7e6e459c24a83bb7fd
 template <class VAL>
-struct RBST
-{
-    static const VAL SUM_UNITY = 0; // to be set
+struct RBST {
+    static const VAL SUM_UNITY = 0;  // to be set
 
     // xorshift
     // https://ja.wikipedia.org/wiki/Xorshift
-    static unsigned int randInt()
-    {
+    static unsigned int randInt() {
         static unsigned int tx = 123456789, ty = 362436069, tz = 521288629, tw = 88675123;
         unsigned int tt = (tx ^ (tx << 11));
         tx = ty;
@@ -40,32 +38,31 @@ struct RBST
         return (tw = (tw ^ (tw >> 19)) ^ (tt ^ (tt >> 8)));
     }
 
-    struct NODE
-    {
-        NODE *left, *right;
-        VAL val;  // the value of the node
-        int size; // the size of the subtree
-        VAL sum;  // the value-sum of the subtree
+    // https://www.slideshare.net/iwiwi/2-12188757
+    // にあるような反転のあるminimum range query を実装したいなど、集合ではなくただの順序をもつ列を管理したい場合
+    // val にはただのindexが入る
+    // 列の値やminは別のフィールドを用意する必要がある
 
-        NODE() : val(SUM_UNITY), size(1), sum(SUM_UNITY)
-        {
+    struct NODE {
+        NODE *left, *right;
+        VAL val;   // the value of the node
+        int size;  // the size of the subtree
+        VAL sum;   // the value-sum of the subtree
+
+        NODE() : val(SUM_UNITY), size(1), sum(SUM_UNITY) {
             left = right = NULL;
         }
 
-        NODE(VAL v) : val(v), size(1), sum(v)
-        {
+        NODE(VAL v) : val(v), size(1), sum(v) {
             left = right = NULL;
         }
 
         /* additional update */
-        void update()
-        {
+        void update() {
         }
 
         /* additional lazy-propagation */
-        void push()
-        {
-
+        void push() {
             /* ex: reverse */
             /*
             if (this->rev) {
@@ -83,52 +80,47 @@ struct RBST
     ///////////////////////
 
     NODE *root;
-    RBST() : root(NULL) {}
-    RBST(NODE *node) : root(node) {}
+    RBST() : root(NULL) {
+    }
+    RBST(NODE *node) : root(node) {
+    }
 
     ///////////////////////
     // basic operations
     ///////////////////////
 
     /* size */
-    static int size(NODE *node)
-    {
+    static int size(NODE *node) {
         return !node ? 0 : node->size;
     }
-    int size()
-    {
+    int size() {
         return this->size(this->root);
     }
 
     /* sum */
-    static VAL sum(NODE *node)
-    {
+    static VAL sum(NODE *node) {
         return !node ? SUM_UNITY : node->sum;
     }
-    VAL sum()
-    {
+    VAL sum() {
         return this->sum(this->root);
     }
 
     /* update, push */
-    static NODE *update(NODE *node)
-    {
+    static NODE *update(NODE *node) {
         node->size = size(node->left) + size(node->right) + 1;
         node->sum = sum(node->left) + sum(node->right) + node->val;
         node->update();
         return node;
     }
 
-    static void push(NODE *node)
-    {
+    static void push(NODE *node) {
         if (!node)
             return;
         node->push();
     }
 
     /* lower_bound */
-    static int lowerBound(NODE *node, VAL val)
-    {
+    static int lowerBound(NODE *node, VAL val) {
         push(node);
         if (!node)
             return 0;
@@ -137,14 +129,12 @@ struct RBST
         else
             return size(node->left) + lowerBound(node->right, val) + 1;
     }
-    int lowerBound(VAL val)
-    {
+    int lowerBound(VAL val) {
         return this->lowerBound(this->root, val);
     }
 
     /* upper_bound */
-    static int upperBound(NODE *node, VAL val)
-    {
+    static int upperBound(NODE *node, VAL val) {
         push(node);
         if (!node)
             return 0;
@@ -153,20 +143,17 @@ struct RBST
         else
             return upperBound(node->left, val);
     }
-    int upperBound(VAL val)
-    {
+    int upperBound(VAL val) {
         return this->upperBound(this->root, val);
     }
 
     /* count */
-    int count(VAL val)
-    {
+    int count(VAL val) {
         return upperBound(val) - lowerBound(val);
     }
 
     /* get --- k: 0-index */
-    static VAL get(NODE *node, int k)
-    {
+    static VAL get(NODE *node, int k) {
         push(node);
         if (!node)
             return -1;
@@ -177,8 +164,7 @@ struct RBST
         else
             return get(node->right, k - size(node->left) - 1);
     }
-    VAL get(int k)
-    {
+    VAL get(int k) {
         return get(this->root, k);
     }
 
@@ -186,52 +172,41 @@ struct RBST
     // merge-split
     ///////////////////////
     // rightの任意の要素はleftの任意の要素より大きいか等しいことを前提としている
-    static NODE *merge(NODE *left, NODE *right)
-    {
+    static NODE *merge(NODE *left, NODE *right) {
         push(left);
         push(right);
-        if (!left || !right)
-        {
+        if (!left || !right) {
             if (left)
                 return left;
             else
                 return right;
         }
-        if (randInt() % (left->size + right->size) < left->size)
-        {
+        if (randInt() % (left->size + right->size) < left->size) {
             left->right = merge(left->right, right);
             return update(left);
-        }
-        else
-        {
+        } else {
             right->left = merge(left, right->left);
             return update(right);
         }
     }
-    void merge(RBST add)
-    {
+    void merge(RBST add) {
         this->root = this->merge(this->root, add.root);
     }
-    static pair<NODE *, NODE *> split(NODE *node, int k)
-    { // [0, k), [k, n)
+    static pair<NODE *, NODE *> split(NODE *node, int k) {  // [0, k), [k, n)
         push(node);
         if (!node)
             return make_pair(node, node);
-        if (k <= size(node->left))
-        {
+        if (k <= size(node->left)) {
             pair<NODE *, NODE *> sub = split(node->left, k);
             node->left = sub.second;
             return make_pair(sub.first, update(node));
-        }
-        else
-        {
+        } else {
             pair<NODE *, NODE *> sub = split(node->right, k - size(node->left) - 1);
             node->right = sub.first;
             return make_pair(update(node), sub.second);
         }
     }
-    RBST split(int k)
-    {
+    RBST split(int k) {
         pair<NODE *, NODE *> sub = split(this->root, k);
         this->root = sub.first;
         return RBST(sub.second);
@@ -241,14 +216,12 @@ struct RBST
     // insert-erase
     ///////////////////////
 
-    void insert(const VAL val)
-    {
+    void insert(const VAL val) {
         pair<NODE *, NODE *> sub = this->split(this->root, this->lowerBound(val));
         this->root = this->merge(this->merge(sub.first, new NODE(val)), sub.second);
     }
 
-    void erase(const VAL val)
-    {
+    void erase(const VAL val) {
         if (!this->count(val))
             return;
         pair<NODE *, NODE *> sub = this->split(this->root, this->lowerBound(val));
@@ -259,8 +232,7 @@ struct RBST
     // debug
     ///////////////////////
 
-    void print(NODE *node)
-    {
+    void print(NODE *node) {
         if (!node)
             return;
         push(node);
@@ -268,33 +240,26 @@ struct RBST
         cout << node->val << " ";
         print(node->right);
     }
-    void print()
-    {
+    void print() {
         cout << "{";
         print(this->root);
         cout << "}" << endl;
     }
 };
 
-int main()
-{
+int main() {
     RBST<long long> S;
     int Q, K;
     cin >> Q >> K;
-    for (int i = 0; i < Q; ++i)
-    {
+    for (int i = 0; i < Q; ++i) {
         int T;
         cin >> T;
-        if (T == 1)
-        {
+        if (T == 1) {
             long long val;
             cin >> val;
             S.insert(val);
-        }
-        else
-        {
-            if (S.size() < K)
-            {
+        } else {
+            if (S.size() < K) {
                 cout << -1 << endl;
                 continue;
             }
