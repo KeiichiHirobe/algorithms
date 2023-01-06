@@ -56,6 +56,14 @@ struct Mo {
                 return l[i] / sz < l[j] / sz;
             }
             return r[i] < r[j];
+            /*
+            偶数、奇数で分けた方が速い
+            if (l[i]/sz &1) {
+                return r[i] < r[j];
+            } else {
+                return r[i] > r[j];
+            }
+            */
         });
     }
 
