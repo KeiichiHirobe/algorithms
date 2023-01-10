@@ -20,13 +20,12 @@ template <typename T> ostream &operator<<(ostream &s, vector<T> const &v) { for 
 // https://ei1333.github.io/luzhiled/snippets/other/mo.html
 // クエリ平方分割ではdelete操作が必要
 // deleteが難しいときは、rollback平方分割で対応できる
-// 例としては区間に対するunionfindなどがある。ブログを参照
 // rollback分の計算量が加算されるが左端を伸ばす計算量と同じであるため、
 // O(N √Q * [追加操作の計算量])
 // 注意点として、O(√Q * [初期化にかかる計算量]) が追加でかかることを意識すること
 
-// 区間の種類数を答える問題
-// https://www.spoj.com/problems/DQUERY/
+// 区間に対するunionfind
+// https://codeforces.com/gym/100513/problem/A
 struct RollbackHeiho {
     using ADD = function<void(int)>;
     using RESET = function<void()>;
@@ -108,28 +107,89 @@ struct RollbackHeiho {
     }
 };
 
-
-
-// curのidxがx
+// par[pi] = pv
+// sz[szi]= szv
 struct history {
-    int idx;
-    int x;
-    int ans;
+    int pi;
+    int pv;
+    int szi;
+    int szv;
 };
 
-int main() {
+struct unionfind {
     int n;
-    cin >> n;
-    vector<int> a(n);
-    vector<int> cur(1e6 + 1, 0);
-    vector<history> log;
-    int ans = 0;
-    rep(i, 0, n) {
-        cin >> a[i];
+    vector<int> par;
+    vector<int> sz;
+    stack<history> log;
+
+    unionfind(int n) : n(n) {
+        par.assign(n, -1);
+        sz.assign(n, 1);
     }
-    int q;
-    cin >> q;
-    RollbackHeiho rh(n, q);
+
+    int parent(int i) {
+        if (par[i] == -1) {
+            return i;
+        }
+        // return par[i] = parent(par[i])
+        // を行うとsnapshotがバグる
+        // mergeでのみ更新されるようにする必要がある
+        return parent(par[i]);
+    }
+
+    bool same(int i, int j) {
+        return parent(i) == parent(j);
+    }
+
+    bool merge(int i, int j) {
+        i = parent(i);
+        j = parent(j);
+        if (i == j) {
+            return false;
+        }
+        if (sz[i] < sz[j]) {
+            swap(i, j);
+        }
+        history cur{j, par[j], i, sz[i]};
+        par[j] = i;
+        sz[i] += sz[j];
+        log.push(cur);
+
+        return true;
+    }
+
+    void snapshot() {
+        while (not log.empty()) {
+            log.pop();
+        }
+    }
+
+    void rollback() {
+        while (not log.empty()) {
+            history cur = log.top();
+            par[cur.pi] = cur.pv;
+            sz[cur.szi] = cur.szv;
+            log.pop();
+        }
+    }
+};
+
+using P = pair<int, int>;
+
+int main() {
+    int n, m, q;
+    cin >> n >> m >> q;
+    vector<P> edge(m);
+
+    RollbackHeiho rh(m, q);
+
+    rep(i, 0, m) {
+        int u, v;
+        cin >> u >> v;
+        --u;
+        --v;
+        edge[i] = {u, v};
+    }
     rep(i, 0, q) {
         int l, r;
         cin >> l >> r;
@@ -137,40 +197,49 @@ int main() {
         rh.add(l, r);
     }
 
-    vector<int> qans(q);
-
+    vector<bool> qans(q);
+    unionfind uf(2 * n);
     rh.init();
+    bool snapshotPossible = true;
+    bool possible = true;
 
     auto add = [&](int i) -> void {
-        log.push_back({a[i], cur[a[i]], ans});
-        ++cur[a[i]];
-        if (cur[a[i]] == 1) {
-            ++ans;
+        auto [u, v] = edge[i];
+        uf.merge(u, v + n);
+        uf.merge(v, u + n);
+        if (uf.same(u, v)) {
+            possible = false;
         }
     };
 
     auto reset = [&]() -> void {
-        cur.assign(1e6 + 1, 0);
-        ans = 0;
-        log.clear();
+        possible = true;
+        snapshotPossible = true;
+        uf = unionfind(2 * n);
     };
-
-    auto snapshot = [&]() -> void { log.clear(); };
-
+    auto snapshot = [&]() -> void {
+        snapshotPossible = possible;
+        uf.snapshot();
+    };
     auto rollback = [&]() -> void {
-        while (not log.empty()) {
-            auto e = log.back();
-            log.pop_back();
-            cur[e.idx] = e.x;
-            ans = e.ans;
+        uf.rollback();
+        possible = snapshotPossible;
+    };
+    auto rem = [&](int i) -> void {
+        if (possible) {
+            qans[i] = true;
+        } else {
+            qans[i] = false;
         }
     };
-
-    auto rem = [&](int i) -> void { qans[i] = ans; };
 
     rh.solve(add, reset, snapshot, rollback, rem);
 
     for (auto x : qans) {
-        cout << x << "\n";
+        if (x) {
+            cout << "Possible\n";
+        } else {
+            cout << "Impossible\n";
+        }
     }
 }
