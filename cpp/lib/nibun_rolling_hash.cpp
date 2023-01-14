@@ -1,10 +1,10 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <map>
 #include <algorithm>
-#include <queue>
+#include <cmath>
 #include <iomanip>
+#include <iostream>
+#include <map>
+#include <queue>
+#include <vector>
 // clang-format off
 #define rep(i,n) for(int i=0, i##_len=(n); i<i##_len; ++i)
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
@@ -21,102 +21,74 @@ int dy[4]={0,1,0,-1};
 using namespace std;
 // clang-format on
 
-// https://atcoder.jp/contests/abc141/tasks/abc141_e
-// 非空文字列であって、S の連続する部分文字列として重ならずに 2 回以上現れるもののうち、最長のものの長さを出力せよ。そのような非空文字列が存在しないときは、0 を出力せよ
 typedef unsigned long long ull;
 #define B1 100000007
 #define B2 1000000007
 
 // hash計算にはmodを利用してないが、実質的に 2^64 でmodを取っているのと同値になっている
 // hash衝突が起きると誤るが競プロの世界ではcheckしてはいけないらしい
-bool rolling_hash(string const &S, int t_start, int m)
-{
-    int s_start = t_start + m;
+// 実際にはmodは十分大きな素数で取るべきで (2^61-1)
+// などが良いようであるが、その場合掛け算がオーバーフローしてしまうので注意が必要 ref:
+// https://qiita.com/keymoon/items/11fac5627672a6d6a9f6
+
+// 文字列Sのt_startからsz文字と同じ文字列がs_start以降に存在するか
+bool rolling_hash(string const &S, int t_start, int s_start, int sz) {
+    // sとtの先頭m文字のハッシュ値sh,thを計算
+    ull sh1 = 0, sh2 = 0, th1 = 0, th2 = 0;
+    for (int k = 0; k < sz; k++) {
+        sh1 = sh1 * B1 + S[s_start + k], sh2 = sh2 * B2 + S[s_start + k];
+        th1 = th1 * B1 + S[t_start + k], th2 = th2 * B2 + S[t_start + k];
+    }
+
+    if (sh1 == th1 && sh2 == th2)
+        return true;
 
     // B^mを用意する
     ull pow_B_m_1 = 1, pow_B_m_2 = 1;
-    for (int k = 0; k < m; k++)
-    {
+    for (int k = 0; k < sz; k++) {
         pow_B_m_1 *= B1, pow_B_m_2 *= B2;
     }
 
-    // sとtの先頭m文字のハッシュ値sh,thを計算
-    ull sh1 = 0, sh2 = 0, th1 = 0, th2 = 0;
-    for (int k = 0; k < m; k++)
-    {
-        th1 = th1 * B1 + S[t_start + k], th2 = th2 * B2 + S[t_start + k];
-        sh1 = sh1 * B1 + S[s_start + k], sh2 = sh2 * B2 + S[s_start + k];
-    }
-
     // sをずらしてハッシュ値を更新
-    for (int k = 0; s_start + k < S.length(); k++)
-    {
+    for (int s = s_start + 1; s + sz <= (int)S.length(); s++) {
+        sh1 = sh1 * B1 + S[s + sz - 1] - S[s - 1] * pow_B_m_1;
+        sh2 = sh2 * B2 + S[s + sz - 1] - S[s - 1] * pow_B_m_2;
         if (sh1 == th1 && sh2 == th2)
             return true;
-        if (k + s_start < S.length())
-        {
-            sh1 = sh1 * B1 + S[s_start + m + k] - S[s_start + k] * pow_B_m_1;
-            sh2 = sh2 * B2 + S[s_start + m + k] - S[s_start + k] * pow_B_m_2;
-        }
     }
     return false;
 }
 
-int main()
-{
+// https://atcoder.jp/contests/abc141/tasks/abc141_e
+// 非空文字列であって、S の連続する部分文字列として重ならずに 2回以上現れるもののうち、最長のものの長さを出力せよ。
+// そのような非空文字列が存在しないときは、0を出力せよ
+int main() {
     int n;
     string S;
     cin >> n >> S;
 
-    // 2部探索では、ある点を境に左はOK、右はNGとなる単調性を利用している。
-    // OKとなる最も右の場所が知りたい
-    int ng = n + 1, ok = 0, mid;
-    // この実装では要素がng or okの2択であることを前提としている
-    // 一般的なlower_boundの実装はずっと難しい
-    // ref: https://en.cppreference.com/w/cpp/algorithm/lower_bound
-    while (ng - ok > 1)
-    {
-        mid = (ng + ok) / 2;
-        bool matched = false;
-        // Sのi文字目をtの先頭として,t = S[i:i+mid], s = S[i+mid:]
-        for (int i = 0; i < n; i++)
-        {
-            if (i + mid * 2 > n)
-                break;
-            if (rolling_hash(S, i, mid))
-            {
-                matched = true;
+    auto exist = [&](int sz) -> bool {
+        if (sz == 0)
+            return true;
+        bool ok = false;
+        for (int i = 0; i + sz + sz <= n; ++i) {
+            if (rolling_hash(S, i, i + sz, sz)) {
+                ok = true;
                 break;
             }
         }
-        if (matched)
-            ok = mid;
-        else
-            ng = mid;
+        return ok;
+    };
+
+    int ok = 0;
+    int ng = (n + 1) / 2 + 1;
+    while (ng - ok > 1) {
+        int c = (ok + ng) / 2;
+        if (exist(c)) {
+            ok = c;
+        } else {
+            ng = c;
+        }
     }
     cout << ok << endl;
-}
-
-// ref: https://en.cppreference.com/w/cpp/algorithm/lower_bound
-int my_lower_bound(const vector<int> &v, const int &value)
-{
-    int a = 0;
-    // countはvalueより小さい可能性があり得る要素の個数
-    int count = v.size();
-    int step;
-    while (count > 0)
-    {
-        step = count / 2;
-        int mid = a + step;
-        if (v[mid] < value)
-        {
-            a = mid + 1;
-            count = count - step - 1;
-        }
-        else
-        {
-            count = step;
-        }
-    }
-    return a;
 }
