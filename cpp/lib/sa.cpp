@@ -81,9 +81,8 @@ vector<int> suffixArray(const string &S) {
 // SにTが存在するかを判定
 // 存在するならそのindex、なければ-1
 // saの構築にO(n)、検索にO(log|S|*|T|)
-int search(const string &S, const string &T) {
+int search(const string &S, const string &T, const vector<int> &sa) {
     // atcoder lib
-    vector<int> sa = suffix_array(S);
     int l = 0;
     int r = S.size() - 1;
     while (l <= r) {
@@ -102,9 +101,52 @@ int search(const string &S, const string &T) {
     return -1;
 }
 
+int op(int a, int b) {
+    return min(a, b);
+}
+
+int e() {
+    return 1e9;
+}
+
+// l文字目とr文字目の最長共通文字数
 int main() {
     cout << fixed << setprecision(16);
-    string S, T;
-    cin >> S >> T;
-    cout << search(S, T) << endl;
+    string S;
+    cin >> S;
+    int n = S.size();
+    // suffix array
+    // size n
+    vector<int> sa = suffix_array(S);
+    // longest common prerfix array
+    // size n-1
+    vector<int> la = lcp_array(S, sa);
+    // 文字列iの位置がsaの何番目か
+    vector<int> rank(n);
+    rep(i, 0, n) {
+        rank[sa[i]] = i;
+        int l = -1;
+        if (i < n - 1) {
+            l = la[i];
+        }
+        printf("%d:%d %s\n", sa[i], l, S.substr(sa[i]).c_str());
+    }
+
+    segtree<int, op, e> seg(la);
+
+    int m;
+    cin >> m;
+    // 0-indexで、l文字目とr文字目の共通文字列をlog(n)で計算
+    // rank[l] < rank[r]とすると
+    // min(la[rank[l]], la[rank[l]+1], .. la[rank[r]-1])
+    rep(i, 0, m) {
+        int l, r;
+        cin >> l >> r;
+        l = rank[l];
+        r = rank[r];
+        if (l > r) {
+            swap(l, r);
+        }
+        cout << seg.prod(l, r) << endl;
+    }
 }
