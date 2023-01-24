@@ -134,19 +134,45 @@ int main() {
 
     segtree<int, op, e> seg(la);
 
-    int m;
-    cin >> m;
     // 0-indexで、l文字目とr文字目の共通文字列をlog(n)で計算
     // rank[l] < rank[r]とすると
     // min(la[rank[l]], la[rank[l]+1], .. la[rank[r]-1])
-    rep(i, 0, m) {
-        int l, r;
-        cin >> l >> r;
+    auto plen = [&](int l, int r) -> int {
+        assert(l != r);
         l = rank[l];
         r = rank[r];
         if (l > r) {
             swap(l, r);
         }
-        cout << seg.prod(l, r) << endl;
+        return seg.prod(l, r);
+    };
+
+    int m;
+    cin >> m;
+    rep(i, 0, m) {
+        int l, r;
+        cin >> l >> r;
+        cout << plen(l, r) << endl;
     }
 }
+
+/*
+keiichi.hirobe@keiichi2022 lib % ./a.out
+abracadabra
+10:1 a
+7:4 abra
+0:1 abracadabra
+3:1 acadabra
+5:0 adabra
+8:3 bra
+1:0 bracadabra
+4:0 cadabra
+6:0 dabra
+9:2 ra
+2:-1 racadabra
+2
+0 7
+4
+0 3
+1
+*/
