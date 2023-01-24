@@ -7,15 +7,14 @@ template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } retu
 template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
 using ll = long long;
 // 2^60
-#define INF (1LL << 60)
 int dx[4]={1,0,-1,0};
 int dy[4]={0,1,0,-1};
 using namespace std;
 using namespace atcoder;
 using Graph = vector<vector<int>>;
-template <typename T> ostream &operator<<(ostream &s, vector<vector<vector<T>>> const &v) { for (int i = 0; i < int(v.size()); ++i) { s << "[" << i << "]" << endl; s << v[i];} return s;}
-template <typename T> ostream &operator<<(ostream &s, vector<vector<T>> const &v) { for (int i = 0; i < int(v.size()); ++i ){ s << v[i];} return s;}
 template <typename T> ostream &operator<<(ostream &s, vector<T> const &v) { for (int i = 0; i < int(v.size()); ++i) { s << v[i]; if (i != int(v.size()) - 1) { s << ",";}} s << endl; return s;}
+template <typename T> ostream &operator<<(ostream &s, vector<vector<T>> const &v) { for (int i = 0; i < int(v.size()); ++i ){ s << v[i];} return s;}
+template <typename T> ostream &operator<<(ostream &s, vector<vector<vector<T>>> const &v) { for (int i = 0; i < int(v.size()); ++i) { s << "[" << i << "]" << endl; s << v[i];} return s;}
 // clang-format on
 
 // 幅優先の例
@@ -35,7 +34,8 @@ vector<int> BFS(const Graph &G, int s) {
         que.pop();
 
         for (int x : G[v]) {
-            if (dist[x] != -1) continue;
+            if (dist[x] != -1)
+                continue;
 
             dist[x] = dist[v] + 1;
             que.push(x);
@@ -52,9 +52,10 @@ int main() {
     Graph G(n);
     auto dfs = [&](auto &&f, int v) -> void {
         seen[v] = true;
-        for (auto next_v : G[v]) {
-            if (seen[next_v]) continue;
-            f(f, next_v);
+        for (auto nv : G[v]) {
+            if (seen[nv])
+                continue;
+            f(f, nv);
         }
     };
 
