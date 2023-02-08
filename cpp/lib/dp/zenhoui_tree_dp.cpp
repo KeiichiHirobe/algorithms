@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+
 #include <atcoder/all>
 // clang-format off
 #define rep(i, s ,n) for(int i=s, i##_len=(n); i<i##_len; ++i)
@@ -47,14 +48,14 @@ struct Rerooting {
     }
 
     void add_edge(int a, int b) {
-        G[a].push_back({b});
+        G[a].push_back(b);
     }
     void build() {
-        dfs(0);            // 普通に木DP
-        bfs(0, identity);  // 残りの部分木に対応するDPを計算
+        dfs(0);
+        bfs(0, identity);
     }
-
-    DP dfs(int v, int p = -1) {  // 頂点v, 親p
+    // dfs完了時には、葉のdp配列は親方向への部分木-1のみある状態で、bfs時に-1が上書きされる
+    DP dfs(int v, int p = -1) {
         DP dp_cum = identity;
         int deg = G[v].size();
         dp[v] = vector<DP>(deg, identity);
