@@ -76,6 +76,24 @@ long long modpow(long long a, long long n, long long mod)
     return ret;
 }
 
+/*
+再起版の方がわかりやすいかも
+
+using mint = modint;
+mint::set_mod(m);
+auto calc = [](auto &&f, long long a, long long n) -> mint {
+    if (n == 0) {
+        return 1;
+    }
+    mint t = f(f, a, n / 2);
+    t = t * t;
+    if (n % 2 == 1) {
+        t *= a;
+    }
+    return t;
+};
+*/
+
 // a^{-1} mod p (pは素数、aはpの倍数でなければいい)
 // 基本はmodinvを使うこと！！ aがpの倍数の時は逆元は存在しない
 // Fermat の小定理
