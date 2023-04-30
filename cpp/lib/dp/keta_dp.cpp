@@ -84,3 +84,49 @@ int main() {
     ll cnt = solve(digit(m)) - solve(digit(n - 1));
     cout << cnt << endl;
 }
+
+
+// 参考
+// 最初の桁がaで最後の桁がbであるv以下の正数の個数
+// v[i]には各桁が入っている
+ll solve(const vector<int> &v, int a, int b) {
+    // dp[i][j]
+    // i: 0 or 1  i=1なら未満であることが既に確定している
+    // j: 0 or 1  j=1なら既にnot 0が登場
+    vector dp(2, vector<ll>(2));
+    dp[0][0] = 1;
+
+    int n = v.size();
+    rep(i, 0, n) {
+        vector prev(2, vector<ll>(2));
+        swap(dp, prev);
+        rep(j, 0, 2) {
+            rep(k, 0, 2) {
+                rep(d, 0, 10) {
+                    int nj = j;
+                    int nk = k;
+                    if (j == 0) {
+                        if (d < v[i]) {
+                            nj = 1;
+                        }
+                        if (v[i] < d)
+                            continue;
+                    }
+                    if (i == n - 1) {
+                        if (d != b) {
+                            continue;
+                        }
+                    }
+                    if (k == 0 and d != 0) {
+                        if (d != a)
+                            continue;
+                        nk = 1;
+                    }
+                    dp[nj][nk] += prev[j][k];
+                }
+            }
+        }
+    }
+    return dp[0][1] + dp[1][1];
+}
+
