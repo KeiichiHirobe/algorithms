@@ -11,7 +11,7 @@
 - Dijkstra
   - 辺の重みが非負の場
   - 閉路あり可
-  - ナイーブ実装 O(V^2) priority queue の実装は O(E\*logV)
+  - ナイーブ実装 O(V^2+M) = O(V^2) priority queue の実装は O(E\*logV)
   - 密なグラフは前者の方がむしろ早い
   - dijkstra.cpp/dijkstra_pqueue.cpp
 - トポロジーソート後に DP
