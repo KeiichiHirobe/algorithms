@@ -3,6 +3,14 @@
     // https://blog.knshnb.com/posts/vscode-setup-competitive/
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
+    "[go]": {
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.defaultFormatter": "golang.go"
+    },
+    "go.formatTool": "gofmt",
     // spaceとindentについての^の二つの設定について、既存ファイルについては上記設定を無視するのがデフォルトの挙動でその場合、trueとする
     // gccのコード読むのが辛いのでfalseとしている
     "editor.detectIndentation": false,
@@ -14,10 +22,10 @@
     "editor.formatOnPaste": true,
     // alwaysでもいいかもしれない
     "editor.autoClosingOvertype": "auto",
-    "files.autoSave": "afterDelay",
+    // https://github.com/microsoft/vscode/issues/45997
+    "files.autoSave": "onFocusChange",
     // VSCodeのUI
     "workbench.statusBar.visible": true,
-    "workbench.activityBar.visible": true,
     "workbench.sideBar.location": "left",
     "workbench.startupEditor": "newUntitledFile",
     "workbench.panel.defaultLocation": "right",
@@ -86,4 +94,9 @@
     "workbench.editor.enablePreview": false,
     "workbench.editor.enablePreviewFromQuickOpen": false,
     "rust-client.rustupPath": "/Users/keiichi/.cargo/bin/rustup",
+    "git.openRepositoryInParentFolders": "never",
+    "editor.lineNumbers": "on",
+    "workbench.editorAssociations": {
+        "*.zip": "default"
+    }
 }
